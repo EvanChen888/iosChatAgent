@@ -1,0 +1,107 @@
+import Foundation
+
+public struct OpenAIRequestMessage: Codable {
+    public let role: String
+    public let content: String
+}
+
+public struct OpenAIRequest: Codable {
+    public let model: String
+    public let messages: [OpenAIRequestMessage]
+    public let stream: Bool
+}
+
+public struct OpenAIStreamResponse: Codable {
+    public struct Choice: Codable {
+        public struct Delta: Codable {
+            public let content: String?
+        }
+        public let delta: Delta
+    }
+    public let choices: [Choice]
+}
+
+public class OpenAIProvider: LLMProvider {
+    public let providerId: AIProvider
+    public let endpointUrl: URL
+    
+    public init(endpointUrl: URL = URL(string: "https://api.openai.com/v1/chat/completions")!, providerId: AIProvider = .openai) {
+        self.endpointUrl = endpointUrl
+        self.providerId = providerId
+    }
+    
+    private func buildRequest(messages: [ChatMessage], model: AIModel, apiKey: String, stream: Bool) throws -> URLRequest {
+        var request = URLRequest(url: endpointUrl)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let apiMessages = messages.map { OpenAIRequestMessage(role: $0.role.rawValue, content: $0.content) }
+        let body = OpenAIRequest(model: model.id, messages: apiMessages, stream: stream)
+        request.httpBody = try JSONEncoder().encode(body)
+        
+        return request
+    }
+    
+    public func sendMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String) async throws -> String {
+        let request = try buildRequest(messages: messages, model: model, apiKey: apiKey, stream: false)
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        // Non-streaming response parsing
+        struct OpenAINonStreamResponse: Codable {
+            struct Choice: Codable {
+                struct Message: Codable {
+                    let content: String?
+                }
+                let message: Message
+            }
+            let choices: [Choice]
+        }
+        
+        let result = try JSONDecoder().decode(OpenAINonStreamResponse.self, from: data)
+        return result.choices.first?.message.content ?? ""
+    }
+    
+    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String) -> AsyncThrowingStream<String, Error> {
+        return AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    let request = try buildRequest(messages: messages, model: model, apiKey: apiKey, stream: true)
+                    let (result, response) = try await URLSession.shared.bytes(for: request)
+                    
+                    guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                        // Error handling
+                        let errorData = try await result.reduce(into: Data()) { $0.append($1) }
+                        let errorStr = String(data: errorData, encoding: .utf8) ?? "Unknown Error"
+                        continuation.finish(throwing: NSError(domain: "OpenAIError", code: (response as? HTTPURLResponse)?.statusCode ?? 500, userInfo: [NSLocalizedDescriptionKey: errorStr]))
+                        return
+                    }
+                    
+                    for try await line in result.lines {
+                        if line.hasPrefix("data: ") {
+                            let jsonStr = line.dropFirst(6)
+                            if jsonStr == "[DONE]" {
+                                continuation.finish()
+                                return
+                            }
+                            
+                            guard let data = jsonStr.data(using: .utf8) else { continue }
+                            do {
+                                let chunk = try JSONDecoder().decode(OpenAIStreamResponse.self, from: data)
+                                if let text = chunk.choices.first?.delta.content {
+                                    continuation.yield(text)
+                                }
+                            } catch {
+                                // Ignore parsing errors for empty chunks or incomplete JSON
+                                continue
+                            }
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+}

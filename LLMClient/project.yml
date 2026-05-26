@@ -1,0 +1,22 @@
+name: LLMClient
+options:
+  bundleIdPrefix: com.example
+targets:
+  LLMClient:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: App
+      - path: Models
+      - path: Views
+      - path: ViewModels
+      - path: Services
+      - path: Utilities
+      - path: Resources
+    info:
+      path: Info.plist
+      properties:
+        UILaunchStoryboardName: LaunchScreen
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false

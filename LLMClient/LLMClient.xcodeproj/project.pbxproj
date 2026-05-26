@@ -1,0 +1,432 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */; };
+		1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BECD8F1CB352EEA080EB89 /* ProviderSettingsView.swift */; };
+		2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200B577B7A1FE31FCC29985E /* KeychainManager.swift */; };
+		5BDF333841858A9418656435 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE815710DB6C5D1D95D374C /* ChatView.swift */; };
+		5D1316086F0EA5EBCAF5F98C /* AIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F966B45002AAE787B89192FA /* AIModel.swift */; };
+		68F4866BA725863657C84595 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A4294D229CCF0A7DFB9DB9 /* AIService.swift */; };
+		80D136EBB63706A9BC80CA99 /* ClaudeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */; };
+		8728F7F52D2C7A5F3A2DC2DD /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570C51DD8DED42A1A672059A /* ChatViewModel.swift */; };
+		9D8EF4D7F8D49EC566931A9E /* LLMClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */; };
+		D6E1107216C8096E9237A011 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456E50BD78DF2B88F6170525 /* ChatSession.swift */; };
+		DB361A3B94AF899C3FBB00FF /* TokenUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */; };
+		E16A584102976DA3BC6F610B /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBECE84D62459BF8330B0E02 /* ChatMessage.swift */; };
+		EBC1CEF000F4784AE51269A0 /* LLMProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */; };
+		F04519816B7CAEA2253E2367 /* DeepSeekProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 735DD40725ABC37D5DB92B42 /* DeepSeekProvider.swift */; };
+		F13A1DD7AB27B1EF5BFEBFBA /* OpenAIProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3151EFAACED0604773A932EE /* OpenAIProvider.swift */; };
+		F2ECD811760BE9D3ED34D0B7 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22504312AC2777FB40CBDFB0 /* SettingsViewModel.swift */; };
+		F8645EBF75F64CD389FD48FF /* APIKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05918AAD944911858777CA0B /* APIKeyView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		05918AAD944911858777CA0B /* APIKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyView.swift; sourceTree = "<group>"; };
+		200B577B7A1FE31FCC29985E /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		22504312AC2777FB40CBDFB0 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		2BE815710DB6C5D1D95D374C /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		3151EFAACED0604773A932EE /* OpenAIProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIProvider.swift; sourceTree = "<group>"; };
+		456E50BD78DF2B88F6170525 /* ChatSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSession.swift; sourceTree = "<group>"; };
+		570C51DD8DED42A1A672059A /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		62BECD8F1CB352EEA080EB89 /* ProviderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderSettingsView.swift; sourceTree = "<group>"; };
+		69A4294D229CCF0A7DFB9DB9 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
+		706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClientApp.swift; sourceTree = "<group>"; };
+		735DD40725ABC37D5DB92B42 /* DeepSeekProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekProvider.swift; sourceTree = "<group>"; };
+		78C7AE64CF18D503F665408B /* LLMClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LLMClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsage.swift; sourceTree = "<group>"; };
+		A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
+		BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeProvider.swift; sourceTree = "<group>"; };
+		DBECE84D62459BF8330B0E02 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
+		F966B45002AAE787B89192FA /* AIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		06081EBAA7B282B2968C6B6D /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				69A4294D229CCF0A7DFB9DB9 /* AIService.swift */,
+			);
+			path = AI;
+			sourceTree = "<group>";
+		};
+		1805B3EC4373C5C944D60146 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		4AD06A265B09FF16E49848D6 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				2BE815710DB6C5D1D95D374C /* ChatView.swift */,
+				EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		4F9B3796F6421AE4EF7524E3 = {
+			isa = PBXGroup;
+			children = (
+				937261821A178566F1642241 /* App */,
+				88384CB8DC37233BE159A7A8 /* Models */,
+				F78A76E7B3AEF055912DD12F /* Resources */,
+				E47B8468B5F223A618608C9E /* Services */,
+				1805B3EC4373C5C944D60146 /* Utilities */,
+				DDA168EA84C46EE1E46A67E1 /* ViewModels */,
+				C7EB64684C9CB1D05A6B83F5 /* Views */,
+				B1C78EF6E900FD71AD0BA3C9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		88384CB8DC37233BE159A7A8 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F966B45002AAE787B89192FA /* AIModel.swift */,
+				DBECE84D62459BF8330B0E02 /* ChatMessage.swift */,
+				456E50BD78DF2B88F6170525 /* ChatSession.swift */,
+				9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		88495BCAC39E7F5AE33A71A0 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				200B577B7A1FE31FCC29985E /* KeychainManager.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		937261821A178566F1642241 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		986463719514868B4BF51063 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				05918AAD944911858777CA0B /* APIKeyView.swift */,
+				62BECD8F1CB352EEA080EB89 /* ProviderSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		B1C78EF6E900FD71AD0BA3C9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				78C7AE64CF18D503F665408B /* LLMClient.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7EB64684C9CB1D05A6B83F5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4AD06A265B09FF16E49848D6 /* Chat */,
+				986463719514868B4BF51063 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DDA168EA84C46EE1E46A67E1 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				570C51DD8DED42A1A672059A /* ChatViewModel.swift */,
+				22504312AC2777FB40CBDFB0 /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E47B8468B5F223A618608C9E /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				06081EBAA7B282B2968C6B6D /* AI */,
+				F232453851EB358E7458BF88 /* Providers */,
+				88495BCAC39E7F5AE33A71A0 /* Storage */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F232453851EB358E7458BF88 /* Providers */ = {
+			isa = PBXGroup;
+			children = (
+				BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */,
+				735DD40725ABC37D5DB92B42 /* DeepSeekProvider.swift */,
+				A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */,
+				3151EFAACED0604773A932EE /* OpenAIProvider.swift */,
+			);
+			path = Providers;
+			sourceTree = "<group>";
+		};
+		F78A76E7B3AEF055912DD12F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		32F9C204BEE7F947AD94380A /* LLMClient */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7F0F6E997D80280CB1ADD036 /* Build configuration list for PBXNativeTarget "LLMClient" */;
+			buildPhases = (
+				0440D1E60A35D2D7A10984E1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LLMClient;
+			packageProductDependencies = (
+			);
+			productName = LLMClient;
+			productReference = 78C7AE64CF18D503F665408B /* LLMClient.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FFCEC29E9D25815C18933288 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 732EF4B2C96AEE16EE486036 /* Build configuration list for PBXProject "LLMClient" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 4F9B3796F6421AE4EF7524E3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B1C78EF6E900FD71AD0BA3C9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				32F9C204BEE7F947AD94380A /* LLMClient */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0440D1E60A35D2D7A10984E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D1316086F0EA5EBCAF5F98C /* AIModel.swift in Sources */,
+				68F4866BA725863657C84595 /* AIService.swift in Sources */,
+				F8645EBF75F64CD389FD48FF /* APIKeyView.swift in Sources */,
+				E16A584102976DA3BC6F610B /* ChatMessage.swift in Sources */,
+				D6E1107216C8096E9237A011 /* ChatSession.swift in Sources */,
+				5BDF333841858A9418656435 /* ChatView.swift in Sources */,
+				8728F7F52D2C7A5F3A2DC2DD /* ChatViewModel.swift in Sources */,
+				80D136EBB63706A9BC80CA99 /* ClaudeProvider.swift in Sources */,
+				F04519816B7CAEA2253E2367 /* DeepSeekProvider.swift in Sources */,
+				2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */,
+				9D8EF4D7F8D49EC566931A9E /* LLMClientApp.swift in Sources */,
+				EBC1CEF000F4784AE51269A0 /* LLMProvider.swift in Sources */,
+				16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */,
+				F13A1DD7AB27B1EF5BFEBFBA /* OpenAIProvider.swift in Sources */,
+				1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */,
+				F2ECD811760BE9D3ED34D0B7 /* SettingsViewModel.swift in Sources */,
+				DB361A3B94AF899C3FBB00FF /* TokenUsage.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1F929729EC0FF75B401EA50E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8B47C0C3A163876374B8B152 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.LLMClient;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9D455052408491B228BD1D12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		B4E756187A57E844BC7BBC1A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.LLMClient;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		732EF4B2C96AEE16EE486036 /* Build configuration list for PBXProject "LLMClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F929729EC0FF75B401EA50E /* Debug */,
+				9D455052408491B228BD1D12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7F0F6E997D80280CB1ADD036 /* Build configuration list for PBXNativeTarget "LLMClient" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B47C0C3A163876374B8B152 /* Debug */,
+				B4E756187A57E844BC7BBC1A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FFCEC29E9D25815C18933288 /* Project object */;
+}
