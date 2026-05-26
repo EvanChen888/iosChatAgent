@@ -1,6 +1,10 @@
 name: LLMClient
 options:
   bundleIdPrefix: com.example
+packages:
+  MarkdownUI:
+    url: https://github.com/gonzalezreal/swift-markdown-ui
+    from: 2.4.0
 targets:
   LLMClient:
     type: application
@@ -14,6 +18,8 @@ targets:
       - path: Services
       - path: Utilities
       - path: Resources
+    dependencies:
+      - package: MarkdownUI
     info:
       path: Info.plist
       properties:

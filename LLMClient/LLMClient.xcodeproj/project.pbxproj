@@ -10,6 +10,8 @@
 		16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */; };
 		1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BECD8F1CB352EEA080EB89 /* ProviderSettingsView.swift */; };
 		2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200B577B7A1FE31FCC29985E /* KeychainManager.swift */; };
+		377909A8B988F99B2B067386 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = AE72A96889214770046641E7 /* MarkdownUI */; };
+		4183E3DF5B10D3068CB9B659 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE367B658E52C1680B1289E /* MarkdownText.swift */; };
 		5BDF333841858A9418656435 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE815710DB6C5D1D95D374C /* ChatView.swift */; };
 		5D1316086F0EA5EBCAF5F98C /* AIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F966B45002AAE787B89192FA /* AIModel.swift */; };
 		68F4866BA725863657C84595 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A4294D229CCF0A7DFB9DB9 /* AIService.swift */; };
@@ -42,10 +44,22 @@
 		9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsage.swift; sourceTree = "<group>"; };
 		A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
 		BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeProvider.swift; sourceTree = "<group>"; };
+		CDE367B658E52C1680B1289E /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
 		DBECE84D62459BF8330B0E02 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
 		F966B45002AAE787B89192FA /* AIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		68E41E5A427A5403EB2CB90E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				377909A8B988F99B2B067386 /* MarkdownUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		06081EBAA7B282B2968C6B6D /* AI */ = {
@@ -61,6 +75,14 @@
 			children = (
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		3D820661B1BCA998B440A331 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				CDE367B658E52C1680B1289E /* MarkdownText.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		4AD06A265B09FF16E49848D6 /* Chat */ = {
@@ -134,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				4AD06A265B09FF16E49848D6 /* Chat */,
+				3D820661B1BCA998B440A331 /* Components */,
 				986463719514868B4BF51063 /* Settings */,
 			);
 			path = Views;
@@ -184,6 +207,7 @@
 			buildConfigurationList = 7F0F6E997D80280CB1ADD036 /* Build configuration list for PBXNativeTarget "LLMClient" */;
 			buildPhases = (
 				0440D1E60A35D2D7A10984E1 /* Sources */,
+				68E41E5A427A5403EB2CB90E /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -191,6 +215,7 @@
 			);
 			name = LLMClient;
 			packageProductDependencies = (
+				AE72A96889214770046641E7 /* MarkdownUI */,
 			);
 			productName = LLMClient;
 			productReference = 78C7AE64CF18D503F665408B /* LLMClient.app */;
@@ -216,6 +241,9 @@
 			);
 			mainGroup = 4F9B3796F6421AE4EF7524E3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2C17BC4FF725B8B510BF9580 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B1C78EF6E900FD71AD0BA3C9 /* Products */;
 			projectDirPath = "";
@@ -243,6 +271,7 @@
 				2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */,
 				9D8EF4D7F8D49EC566931A9E /* LLMClientApp.swift in Sources */,
 				EBC1CEF000F4784AE51269A0 /* LLMProvider.swift in Sources */,
+				4183E3DF5B10D3068CB9B659 /* MarkdownText.swift in Sources */,
 				16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */,
 				F13A1DD7AB27B1EF5BFEBFBA /* OpenAIProvider.swift in Sources */,
 				1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */,
@@ -427,6 +456,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2C17BC4FF725B8B510BF9580 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AE72A96889214770046641E7 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C17BC4FF725B8B510BF9580 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FFCEC29E9D25815C18933288 /* Project object */;
 }
