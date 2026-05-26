@@ -10,8 +10,13 @@ public class ChatViewModel: ObservableObject {
     // For now, default to DeepSeek
     private let defaultModel = AIModel(id: "deepseek-chat", name: "DeepSeek Chat", provider: .deepseek)
     
-    public init(session: ChatSession = ChatSession(selectedModelId: "deepseek-chat")) {
-        self.session = session
+    public init() {
+        let loadedSessions = ChatStorage.shared.loadSessions()
+        if let firstSession = loadedSessions.first {
+            self.session = firstSession
+        } else {
+            self.session = ChatSession(selectedModelId: "deepseek-chat")
+        }
     }
     
     public func sendMessage() {
@@ -26,6 +31,8 @@ public class ChatViewModel: ObservableObject {
         let assistantMessage = ChatMessage(role: .assistant, content: "")
         session.messages.append(assistantMessage)
         let messageIndex = session.messages.count - 1
+        
+        ChatStorage.shared.saveSessions([session])
         
         Task {
             do {
@@ -44,6 +51,7 @@ public class ChatViewModel: ObservableObject {
                 session.messages[messageIndex].content = "Error: \(error.localizedDescription)"
             }
             isGenerating = false
+            ChatStorage.shared.saveSessions([session])
         }
     }
 }

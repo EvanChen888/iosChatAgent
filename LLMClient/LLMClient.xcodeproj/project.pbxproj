@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */; };
 		1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BECD8F1CB352EEA080EB89 /* ProviderSettingsView.swift */; };
+		226E688CA5A4A50F079699E0 /* ChatStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEA5B75A78EEDB3C78E0114 /* ChatStorage.swift */; };
 		2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200B577B7A1FE31FCC29985E /* KeychainManager.swift */; };
 		377909A8B988F99B2B067386 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = AE72A96889214770046641E7 /* MarkdownUI */; };
 		4183E3DF5B10D3068CB9B659 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE367B658E52C1680B1289E /* MarkdownText.swift */; };
@@ -44,6 +45,7 @@
 		9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsage.swift; sourceTree = "<group>"; };
 		A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
 		BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeProvider.swift; sourceTree = "<group>"; };
+		BEEA5B75A78EEDB3C78E0114 /* ChatStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatStorage.swift; sourceTree = "<group>"; };
 		CDE367B658E52C1680B1289E /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
 		DBECE84D62459BF8330B0E02 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 		88495BCAC39E7F5AE33A71A0 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				BEEA5B75A78EEDB3C78E0114 /* ChatStorage.swift */,
 				200B577B7A1FE31FCC29985E /* KeychainManager.swift */,
 			);
 			path = Storage;
@@ -264,6 +267,7 @@
 				F8645EBF75F64CD389FD48FF /* APIKeyView.swift in Sources */,
 				E16A584102976DA3BC6F610B /* ChatMessage.swift in Sources */,
 				D6E1107216C8096E9237A011 /* ChatSession.swift in Sources */,
+				226E688CA5A4A50F079699E0 /* ChatStorage.swift in Sources */,
 				5BDF333841858A9418656435 /* ChatView.swift in Sources */,
 				8728F7F52D2C7A5F3A2DC2DD /* ChatViewModel.swift in Sources */,
 				80D136EBB63706A9BC80CA99 /* ClaudeProvider.swift in Sources */,
