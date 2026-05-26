@@ -1,38 +1,52 @@
 import SwiftUI
 
 public struct ChatView: View {
-    @StateObject private var viewModel = ChatViewModel()
+    @ObservedObject var viewModel: ChatViewModel
     @State private var showingSettings = false
     
-    public init() {}
+    public init(viewModel: ChatViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    private var activeSession: ChatSession? {
+        if let index = viewModel.activeSessionIndex {
+            return viewModel.sessions[index]
+        }
+        return nil
+    }
     
     public var body: some View {
         VStack {
-            ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(viewModel.session.messages) { message in
-                        MessageBubble(message: message)
+            if let session = activeSession {
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(session.messages) { message in
+                            MessageBubble(message: message)
+                        }
                     }
+                    .padding()
+                }
+                
+                HStack {
+                    TextField("Message...", text: $viewModel.inputText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .disabled(viewModel.isGenerating)
+                    
+                    Button(action: {
+                        viewModel.sendMessage()
+                    }) {
+                        Image(systemName: "paperplane.fill")
+                            .foregroundColor(viewModel.isGenerating || viewModel.inputText.isEmpty ? .gray : .blue)
+                    }
+                    .disabled(viewModel.isGenerating || viewModel.inputText.isEmpty)
                 }
                 .padding()
+            } else {
+                Text("Select or create a chat to begin.")
+                    .foregroundColor(.gray)
             }
-            
-            HStack {
-                TextField("Message...", text: $viewModel.inputText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .disabled(viewModel.isGenerating)
-                
-                Button(action: {
-                    viewModel.sendMessage()
-                }) {
-                    Image(systemName: "paperplane.fill")
-                        .foregroundColor(viewModel.isGenerating || viewModel.inputText.isEmpty ? .gray : .blue)
-                }
-                .disabled(viewModel.isGenerating || viewModel.inputText.isEmpty)
-            }
-            .padding()
         }
-        .navigationTitle(viewModel.session.title)
+        .navigationTitle(activeSession?.title ?? "Chat")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {

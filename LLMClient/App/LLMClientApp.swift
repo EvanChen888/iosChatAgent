@@ -4,9 +4,7 @@ import SwiftUI
 struct LLMClientApp: App {
     var body: some Scene {
         WindowGroup {
-            NavigationView {
-                ChatView()
-            }
+            MainSplitView()
         }
     }
 }

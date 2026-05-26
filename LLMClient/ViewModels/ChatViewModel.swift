@@ -3,7 +3,9 @@ import SwiftUI
 
 @MainActor
 public class ChatViewModel: ObservableObject {
-    @Published public var session: ChatSession
+    @Published public var sessions: [ChatSession] = []
+    @Published public var selectedSessionId: UUID?
+    
     @Published public var inputText: String = ""
     @Published public var isGenerating: Bool = false
     
@@ -12,46 +14,84 @@ public class ChatViewModel: ObservableObject {
     
     public init() {
         let loadedSessions = ChatStorage.shared.loadSessions()
+        self.sessions = loadedSessions
+        
         if let firstSession = loadedSessions.first {
-            self.session = firstSession
+            self.selectedSessionId = firstSession.id
         } else {
-            self.session = ChatSession(selectedModelId: "deepseek-chat")
+            createNewChat()
         }
     }
     
+    public var activeSessionIndex: Int? {
+        sessions.firstIndex(where: { $0.id == selectedSessionId })
+    }
+    
+    public func createNewChat() {
+        let newSession = ChatSession(selectedModelId: "deepseek-chat")
+        sessions.insert(newSession, at: 0)
+        selectedSessionId = newSession.id
+        saveSessions()
+    }
+    
+    public func deleteChat(at offsets: IndexSet) {
+        let sessionIdsToDelete = offsets.map { sessions[$0].id }
+        sessions.remove(atOffsets: offsets)
+        
+        if let currentId = selectedSessionId, sessionIdsToDelete.contains(currentId) {
+            selectedSessionId = sessions.first?.id
+        }
+        
+        if sessions.isEmpty {
+            createNewChat()
+        }
+        
+        saveSessions()
+    }
+    
+    private func saveSessions() {
+        ChatStorage.shared.saveSessions(sessions)
+    }
+    
     public func sendMessage() {
+        guard let index = activeSessionIndex else { return }
         guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         
         let userMessage = ChatMessage(role: .user, content: inputText)
-        session.messages.append(userMessage)
+        sessions[index].messages.append(userMessage)
         inputText = ""
         isGenerating = true
         
         // Add empty assistant message to stream into
         let assistantMessage = ChatMessage(role: .assistant, content: "")
-        session.messages.append(assistantMessage)
-        let messageIndex = session.messages.count - 1
+        sessions[index].messages.append(assistantMessage)
+        let messageIndex = sessions[index].messages.count - 1
         
-        ChatStorage.shared.saveSessions([session])
+        saveSessions()
         
         Task {
             do {
                 let apiKey = KeychainManager.shared.get(for: defaultModel.provider) ?? ""
                 if apiKey.isEmpty {
-                    session.messages[messageIndex].content = "Error: Please configure the API key for \(defaultModel.provider.rawValue) in Settings."
+                    sessions[index].messages[messageIndex].content = "Error: Please configure the API key for \(defaultModel.provider.rawValue) in Settings."
                     isGenerating = false
                     return
                 }
                 
-                let stream = AIService.shared.streamMessage(session.messages, model: defaultModel, apiKey: apiKey)
+                let stream = AIService.shared.streamMessage(sessions[index].messages, model: defaultModel, apiKey: apiKey)
                 for try await chunk in stream {
-                    session.messages[messageIndex].content += chunk
+                    // Re-fetch index in case it changed during async
+                    if let currentIndex = activeSessionIndex {
+                        sessions[currentIndex].messages[messageIndex].content += chunk
+                    }
                 }
             } catch {
-                session.messages[messageIndex].content = "Error: \(error.localizedDescription)"
+                if let currentIndex = activeSessionIndex {
+                    sessions[currentIndex].messages[messageIndex].content = "Error: \(error.localizedDescription)"
+                }
             }
             isGenerating = false
-            ChatStorage.shared.saveSessions([session])
+            saveSessions()
         }
     }
 }

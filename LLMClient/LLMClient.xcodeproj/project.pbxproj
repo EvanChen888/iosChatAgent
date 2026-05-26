@@ -13,9 +13,11 @@
 		2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200B577B7A1FE31FCC29985E /* KeychainManager.swift */; };
 		377909A8B988F99B2B067386 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = AE72A96889214770046641E7 /* MarkdownUI */; };
 		4183E3DF5B10D3068CB9B659 /* MarkdownText.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE367B658E52C1680B1289E /* MarkdownText.swift */; };
+		55362CA5D7EC8B522989081B /* MainSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A21BD56169F51652B650AF /* MainSplitView.swift */; };
 		5BDF333841858A9418656435 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BE815710DB6C5D1D95D374C /* ChatView.swift */; };
 		5D1316086F0EA5EBCAF5F98C /* AIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F966B45002AAE787B89192FA /* AIModel.swift */; };
 		68F4866BA725863657C84595 /* AIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69A4294D229CCF0A7DFB9DB9 /* AIService.swift */; };
+		75CCFC1A51F048943C90FB8F /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC54B11739AA31CE9210617 /* SidebarView.swift */; };
 		80D136EBB63706A9BC80CA99 /* ClaudeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */; };
 		8728F7F52D2C7A5F3A2DC2DD /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570C51DD8DED42A1A672059A /* ChatViewModel.swift */; };
 		9D8EF4D7F8D49EC566931A9E /* LLMClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */; };
@@ -43,11 +45,13 @@
 		735DD40725ABC37D5DB92B42 /* DeepSeekProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekProvider.swift; sourceTree = "<group>"; };
 		78C7AE64CF18D503F665408B /* LLMClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LLMClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsage.swift; sourceTree = "<group>"; };
+		9FC54B11739AA31CE9210617 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
 		BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeProvider.swift; sourceTree = "<group>"; };
 		BEEA5B75A78EEDB3C78E0114 /* ChatStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatStorage.swift; sourceTree = "<group>"; };
 		CDE367B658E52C1680B1289E /* MarkdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownText.swift; sourceTree = "<group>"; };
 		DBECE84D62459BF8330B0E02 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		E3A21BD56169F51652B650AF /* MainSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainSplitView.swift; sourceTree = "<group>"; };
 		EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
 		F966B45002AAE787B89192FA /* AIModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				CDE367B658E52C1680B1289E /* MarkdownText.swift */,
+				9FC54B11739AA31CE9210617 /* SidebarView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -158,6 +163,7 @@
 		C7EB64684C9CB1D05A6B83F5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E3A21BD56169F51652B650AF /* MainSplitView.swift */,
 				4AD06A265B09FF16E49848D6 /* Chat */,
 				3D820661B1BCA998B440A331 /* Components */,
 				986463719514868B4BF51063 /* Settings */,
@@ -275,11 +281,13 @@
 				2935C2CBB947223B9B1FE1CC /* KeychainManager.swift in Sources */,
 				9D8EF4D7F8D49EC566931A9E /* LLMClientApp.swift in Sources */,
 				EBC1CEF000F4784AE51269A0 /* LLMProvider.swift in Sources */,
+				55362CA5D7EC8B522989081B /* MainSplitView.swift in Sources */,
 				4183E3DF5B10D3068CB9B659 /* MarkdownText.swift in Sources */,
 				16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */,
 				F13A1DD7AB27B1EF5BFEBFBA /* OpenAIProvider.swift in Sources */,
 				1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */,
 				F2ECD811760BE9D3ED34D0B7 /* SettingsViewModel.swift in Sources */,
+				75CCFC1A51F048943C90FB8F /* SidebarView.swift in Sources */,
 				DB361A3B94AF899C3FBB00FF /* TokenUsage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
