@@ -22,3 +22,13 @@ public struct AIModel: Identifiable, Codable, Equatable {
         self.provider = provider
     }
 }
+
+extension AIModel {
+    public static let availableModels: [AIModel] = [
+        AIModel(id: "deepseek-chat", name: "DeepSeek Chat", provider: .deepseek),
+        AIModel(id: "deepseek-reasoner", name: "DeepSeek Reasoner", provider: .deepseek),
+        AIModel(id: "gpt-4o", name: "GPT-4o", provider: .openai),
+        AIModel(id: "gpt-4o-mini", name: "GPT-4o Mini", provider: .openai),
+        AIModel(id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet", provider: .claude)
+    ]
+}

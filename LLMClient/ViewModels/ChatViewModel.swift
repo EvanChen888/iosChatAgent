@@ -9,9 +9,6 @@ public class ChatViewModel: ObservableObject {
     @Published public var inputText: String = ""
     @Published public var isGenerating: Bool = false
     
-    // For now, default to DeepSeek
-    private let defaultModel = AIModel(id: "deepseek-chat", name: "DeepSeek Chat", provider: .deepseek)
-    
     public init() {
         let loadedSessions = ChatStorage.shared.loadSessions()
         self.sessions = loadedSessions
@@ -25,6 +22,19 @@ public class ChatViewModel: ObservableObject {
     
     public var activeSessionIndex: Int? {
         sessions.firstIndex(where: { $0.id == selectedSessionId })
+    }
+    
+    public var activeModel: AIModel? {
+        guard let index = activeSessionIndex else { return nil }
+        let modelId = sessions[index].selectedModelId
+        return AIModel.availableModels.first(where: { $0.id == modelId }) ?? AIModel.availableModels.first
+    }
+    
+    public func setModel(for sessionId: UUID, modelId: String) {
+        if let index = sessions.firstIndex(where: { $0.id == sessionId }) {
+            sessions[index].selectedModelId = modelId
+            saveSessions()
+        }
     }
     
     public func createNewChat() {
@@ -69,16 +79,18 @@ public class ChatViewModel: ObservableObject {
         
         saveSessions()
         
+        guard let model = activeModel else { return }
+        
         Task {
             do {
-                let apiKey = KeychainManager.shared.get(for: defaultModel.provider) ?? ""
+                let apiKey = KeychainManager.shared.get(for: model.provider) ?? ""
                 if apiKey.isEmpty {
-                    sessions[index].messages[messageIndex].content = "Error: Please configure the API key for \(defaultModel.provider.rawValue) in Settings."
+                    sessions[index].messages[messageIndex].content = "Error: Please configure the API key for \(model.provider.rawValue) in Settings."
                     isGenerating = false
                     return
                 }
                 
-                let stream = AIService.shared.streamMessage(sessions[index].messages, model: defaultModel, apiKey: apiKey)
+                let stream = AIService.shared.streamMessage(sessions[index].messages, model: model, apiKey: apiKey)
                 for try await chunk in stream {
                     // Re-fetch index in case it changed during async
                     if let currentIndex = activeSessionIndex {

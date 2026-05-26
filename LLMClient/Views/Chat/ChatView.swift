@@ -18,13 +18,30 @@ public struct ChatView: View {
     public var body: some View {
         VStack {
             if let session = activeSession {
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(session.messages) { message in
-                            MessageBubble(message: message)
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(session.messages) { message in
+                                MessageBubble(message: message)
+                                    .id(message.id)
+                            }
+                        }
+                        .padding()
+                    }
+                    .onChange(of: session.messages.count) { _ in
+                        if let lastMessage = session.messages.last {
+                            withAnimation {
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                            }
                         }
                     }
-                    .padding()
+                    .onChange(of: session.messages.last?.content) { _ in
+                        if let lastMessage = session.messages.last {
+                            withAnimation {
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                            }
+                        }
+                    }
                 }
                 
                 HStack {
@@ -48,6 +65,9 @@ public struct ChatView: View {
         }
         .navigationTitle(activeSession?.title ?? "Chat")
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                ModelPicker(viewModel: viewModel)
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     showingSettings = true
