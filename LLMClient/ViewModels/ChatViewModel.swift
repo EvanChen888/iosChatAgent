@@ -38,7 +38,7 @@ public class ChatViewModel: ObservableObject {
     }
     
     public func createNewChat() {
-        let newSession = ChatSession(selectedModelId: "deepseek-chat")
+        let newSession = ChatSession(selectedModelId: "deepseek-v4-flash")
         sessions.insert(newSession, at: 0)
         selectedSessionId = newSession.id
         saveSessions()

@@ -8,7 +8,8 @@ public class AIService: ObservableObject {
     private var providers: [AIProvider: LLMProvider] = [
         .openai: OpenAIProvider(),
         .claude: ClaudeProvider(),
-        .deepseek: DeepSeekProvider()
+        .deepseek: DeepSeekProvider(),
+        .gemini: GeminiProvider()
         // Other providers can be registered here
     ]
     
