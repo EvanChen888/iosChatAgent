@@ -104,26 +104,29 @@ public class ChatViewModel: ObservableObject {
         
         guard let model = activeModel else { return }
         
+        let targetSessionId = sessions[index].id
+        
         Task {
-            do {
-                let apiKey = KeychainManager.shared.get(for: model.provider) ?? ""
-                if apiKey.isEmpty {
-                    sessions[index].messages[messageIndex].content = "Error: Please configure the API key for \(model.provider.rawValue) in Settings."
+            let apiKey = KeychainManager.shared.get(for: model.provider) ?? ""
+            if apiKey.isEmpty {
+                if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
+                    sessions[currentIndex].messages[messageIndex].content = "Error: Please configure the API key for \(model.provider.rawValue) in Settings."
                     isGenerating = false
-                    return
                 }
-                
+                return
+            }
+            
+            do {
                 let stream = AIService.shared.streamMessage(sessions[index].messages, model: model, apiKey: apiKey) { tokenUsage in
                     Task { @MainActor in
-                        if let currentIndex = self.activeSessionIndex {
+                        if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                             self.sessions[currentIndex].messages[messageIndex].tokenUsage = tokenUsage
                             self.sessions[currentIndex].messages[messageIndex].cost = PricingConfig.calculateCost(modelId: model.id, usage: tokenUsage)
                         }
                     }
                 }
                 for try await event in stream {
-                    // Re-fetch index in case it changed during async
-                    if let currentIndex = activeSessionIndex {
+                    if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                         switch event {
                         case .text(let text):
                             sessions[currentIndex].messages[messageIndex].content += text
@@ -136,12 +139,68 @@ public class ChatViewModel: ObservableObject {
                     }
                 }
             } catch {
-                if let currentIndex = activeSessionIndex {
+                if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                     sessions[currentIndex].messages[messageIndex].content = "Error: \(error.localizedDescription)"
                 }
             }
             isGenerating = false
             saveSessions()
+            
+            // Auto-generate title for new chats
+            if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }), sessions[currentIndex].title == "New Chat", let firstUserMsg = sessions[currentIndex].messages.first(where: { $0.role == .user }) {
+                let msgContent = firstUserMsg.content
+                generateSummaryTitle(for: targetSessionId, firstMessage: msgContent, model: model, apiKey: apiKey)
+            }
+        }
+    }
+    
+    private func generateSummaryTitle(for sessionId: UUID, firstMessage: String, model: AIModel, apiKey: String) {
+        Task {
+            do {
+                let trimmedMsg = firstMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmedMsg.isEmpty {
+                    updateSessionTitle(sessionId: sessionId, title: "Image Message")
+                    return
+                }
+                
+                try await Task.sleep(nanoseconds: 1_500_000_000)
+                
+                let messages = [
+                    ChatMessage(role: .system, content: "You are a title generator. Return only the short title. No quotes, no intro, no punctuation."),
+                    ChatMessage(role: .user, content: "Summarize this into a short, concise chat title (maximum 4 words):\n\n\(trimmedMsg)")
+                ]
+                
+                let generatedTitle = try await AIService.shared.sendMessage(messages, model: model, apiKey: apiKey)
+                
+                // Strip out reasoning blocks (e.g. from DeepSeek or Claude)
+                var cleanTitle = generatedTitle
+                if let endThinkRange = cleanTitle.range(of: "</think>") {
+                    cleanTitle = String(cleanTitle[endThinkRange.upperBound...])
+                }
+                
+                var finalTitle = cleanTitle.trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: "\"'.!?")))
+                
+                if finalTitle.isEmpty || finalTitle.count > 30 {
+                    finalTitle = String(trimmedMsg.prefix(15)) + (trimmedMsg.count > 15 ? "..." : "")
+                }
+                
+                updateSessionTitle(sessionId: sessionId, title: finalTitle)
+            } catch {
+                print("Failed to generate title: \(error)")
+                let trimmedMsg = firstMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmedMsg.isEmpty {
+                    let fallbackTitle = String(trimmedMsg.prefix(15)) + (trimmedMsg.count > 15 ? "..." : "")
+                    updateSessionTitle(sessionId: sessionId, title: fallbackTitle)
+                }
+            }
+        }
+    }
+    
+    @MainActor
+    private func updateSessionTitle(sessionId: UUID, title: String) {
+        if let index = self.sessions.firstIndex(where: { $0.id == sessionId }) {
+            self.sessions[index].title = title
+            self.saveSessions()
         }
     }
 }

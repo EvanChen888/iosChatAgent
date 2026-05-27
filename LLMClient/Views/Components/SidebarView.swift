@@ -6,11 +6,9 @@ public struct SidebarView: View {
     public var body: some View {
         List(selection: $viewModel.selectedSessionId) {
             ForEach(viewModel.sessions) { session in
-                let title = session.messages.first(where: { $0.role == .user })?.content ?? session.title
-                
                 NavigationLink(value: session.id) {
                     VStack(alignment: .leading) {
-                        Text(title)
+                        Text(session.title)
                             .lineLimit(1)
                             .font(.headline)
                         Text(session.createdAt, style: .date)

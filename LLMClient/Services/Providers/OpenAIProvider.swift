@@ -89,7 +89,7 @@ public class OpenAIProvider: LLMProvider {
                         let base64 = data.base64EncodedString()
                         let url = "data:image/jpeg;base64,\(base64)"
                         parts.append(OpenAIContentPart(type: "image_url", image_url: OpenAIImageUrl(url: url)))
-                    } else if attachment.type == .pdf, let url = attachment.url {
+                    } else if attachment.type == .pdf {
                         // Handled in view model
                     } else if attachment.type == .text {
                         var textContent: String? = nil
@@ -117,7 +117,12 @@ public class OpenAIProvider: LLMProvider {
     
     public func sendMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String) async throws -> String {
         let request = try buildRequest(messages: messages, model: model, apiKey: apiKey, stream: false)
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+            let errorString = String(data: data, encoding: .utf8) ?? "Unknown Error"
+            throw NSError(domain: "OpenAIProvider", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP \(httpResponse.statusCode): \(errorString)"])
+        }
         
         // Non-streaming response parsing
         struct OpenAINonStreamResponse: Codable {
