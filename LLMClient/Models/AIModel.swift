@@ -29,6 +29,7 @@ extension AIModel {
         AIModel(id: "deepseek-reasoner", name: "DeepSeek Reasoner", provider: .deepseek),
         AIModel(id: "gpt-4o", name: "GPT-4o", provider: .openai),
         AIModel(id: "gpt-4o-mini", name: "GPT-4o Mini", provider: .openai),
-        AIModel(id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet", provider: .claude)
+        AIModel(id: "claude-sonnet-4-6", name: "Claude 4.6 Sonnet", provider: .claude),
+        AIModel(id: "claude-haiku-4-5-20251001", name: "Claude 4.5 Haiku", provider: .claude)
     ]
 }

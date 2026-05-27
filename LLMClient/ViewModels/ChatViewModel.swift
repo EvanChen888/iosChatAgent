@@ -90,7 +90,14 @@ public class ChatViewModel: ObservableObject {
                     return
                 }
                 
-                let stream = AIService.shared.streamMessage(sessions[index].messages, model: model, apiKey: apiKey)
+                let stream = AIService.shared.streamMessage(sessions[index].messages, model: model, apiKey: apiKey) { tokenUsage in
+                    Task { @MainActor in
+                        if let currentIndex = self.activeSessionIndex {
+                            self.sessions[currentIndex].messages[messageIndex].tokenUsage = tokenUsage
+                            self.sessions[currentIndex].messages[messageIndex].cost = PricingConfig.calculateCost(modelId: model.id, usage: tokenUsage)
+                        }
+                    }
+                }
                 for try await chunk in stream {
                     // Re-fetch index in case it changed during async
                     if let currentIndex = activeSessionIndex {

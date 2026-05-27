@@ -12,6 +12,7 @@ public protocol LLMProvider {
     func streamMessage(
         _ messages: [ChatMessage],
         model: AIModel,
-        apiKey: String
+        apiKey: String,
+        onUsageUpdate: @escaping (TokenUsage) -> Void
     ) -> AsyncThrowingStream<String, Error>
 }

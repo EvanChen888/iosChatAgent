@@ -5,10 +5,15 @@ public struct OpenAIRequestMessage: Codable {
     public let content: String
 }
 
+public struct OpenAIStreamOptions: Codable {
+    public let include_usage: Bool
+}
+
 public struct OpenAIRequest: Codable {
     public let model: String
     public let messages: [OpenAIRequestMessage]
     public let stream: Bool
+    public let stream_options: OpenAIStreamOptions?
 }
 
 public struct OpenAIStreamResponse: Codable {
@@ -18,7 +23,13 @@ public struct OpenAIStreamResponse: Codable {
         }
         public let delta: Delta
     }
-    public let choices: [Choice]
+    public struct Usage: Codable {
+        public let prompt_tokens: Int
+        public let completion_tokens: Int
+        public let total_tokens: Int
+    }
+    public let choices: [Choice]?
+    public let usage: Usage?
 }
 
 public class OpenAIProvider: LLMProvider {
@@ -37,7 +48,8 @@ public class OpenAIProvider: LLMProvider {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let apiMessages = messages.map { OpenAIRequestMessage(role: $0.role.rawValue, content: $0.content) }
-        let body = OpenAIRequest(model: model.id, messages: apiMessages, stream: stream)
+        let streamOptions = stream ? OpenAIStreamOptions(include_usage: true) : nil
+        let body = OpenAIRequest(model: model.id, messages: apiMessages, stream: stream, stream_options: streamOptions)
         request.httpBody = try JSONEncoder().encode(body)
         
         return request
@@ -62,7 +74,7 @@ public class OpenAIProvider: LLMProvider {
         return result.choices.first?.message.content ?? ""
     }
     
-    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String) -> AsyncThrowingStream<String, Error> {
+    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<String, Error> {
         return AsyncThrowingStream { continuation in
             Task {
                 do {
@@ -88,8 +100,16 @@ public class OpenAIProvider: LLMProvider {
                             guard let data = jsonStr.data(using: .utf8) else { continue }
                             do {
                                 let chunk = try JSONDecoder().decode(OpenAIStreamResponse.self, from: data)
-                                if let text = chunk.choices.first?.delta.content {
+                                if let text = chunk.choices?.first?.delta.content {
                                     continuation.yield(text)
+                                }
+                                if let usage = chunk.usage {
+                                    let tokenUsage = TokenUsage(
+                                        promptTokens: usage.prompt_tokens,
+                                        completionTokens: usage.completion_tokens,
+                                        totalTokens: usage.total_tokens
+                                    )
+                                    onUsageUpdate(tokenUsage)
                                 }
                             } catch {
                                 // Ignore parsing errors for empty chunks or incomplete JSON
