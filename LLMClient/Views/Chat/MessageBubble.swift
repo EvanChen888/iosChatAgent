@@ -8,21 +8,43 @@ public struct MessageBubble: View {
             if message.role == .user { Spacer(minLength: 40) }
             
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
+                if let reasoning = message.reasoningContent, !reasoning.isEmpty {
+                    DisclosureGroup {
+                        MarkdownText(reasoning)
+                            .padding(.top, 4)
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "brain.head.profile")
+                            Text("Thinking Process")
+                        }
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    }
+                    .padding(8)
+                    .background(Color(uiColor: .systemGray6))
+                    .cornerRadius(8)
+                    .padding(.bottom, 4)
+                }
+                
                 MarkdownText(message.content)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
                         Group {
                             if message.role == .user {
-                                LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple.opacity(0.8)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.blue.opacity(0.85), Color.indigo]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             } else {
-                                Color(uiColor: .systemGray6)
+                                Color(uiColor: .secondarySystemGroupedBackground)
                             }
                         }
                     )
                     .foregroundColor(message.role == .user ? .white : .primary)
                     .clipShape(ChatBubbleShape(isUser: message.role == .user))
-                    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+                    .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 1)
                 
                 if let usage = message.tokenUsage {
                     HStack(spacing: 4) {

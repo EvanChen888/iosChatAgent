@@ -9,7 +9,18 @@ public struct ModelPicker: View {
     
     public var body: some View {
         Menu {
-            ForEach(AIModel.availableModels) { model in
+            let activeSession = viewModel.activeSessionIndex.map { viewModel.sessions[$0] }
+            let hasMessages = !(activeSession?.messages.isEmpty ?? true)
+            let activeProvider = viewModel.activeModel?.provider
+            
+            let selectableModels = AIModel.availableModels.filter { model in
+                if hasMessages, let activeProvider = activeProvider {
+                    return model.provider == activeProvider
+                }
+                return true
+            }
+            
+            ForEach(selectableModels) { model in
                 Button(action: {
                     if let sessionId = viewModel.selectedSessionId {
                         viewModel.setModel(for: sessionId, modelId: model.id)

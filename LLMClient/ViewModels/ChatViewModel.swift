@@ -98,10 +98,18 @@ public class ChatViewModel: ObservableObject {
                         }
                     }
                 }
-                for try await chunk in stream {
+                for try await event in stream {
                     // Re-fetch index in case it changed during async
                     if let currentIndex = activeSessionIndex {
-                        sessions[currentIndex].messages[messageIndex].content += chunk
+                        switch event {
+                        case .text(let text):
+                            sessions[currentIndex].messages[messageIndex].content += text
+                        case .reasoning(let text):
+                            if sessions[currentIndex].messages[messageIndex].reasoningContent == nil {
+                                sessions[currentIndex].messages[messageIndex].reasoningContent = ""
+                            }
+                            sessions[currentIndex].messages[messageIndex].reasoningContent? += text
+                        }
                     }
                 }
             } catch {

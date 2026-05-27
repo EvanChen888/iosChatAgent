@@ -21,7 +21,7 @@ public class AIService: ObservableObject {
         return try await provider.sendMessage(messages, model: model, apiKey: apiKey)
     }
     
-    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<String, Error> {
+    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<StreamEvent, Error> {
         guard let provider = providers[model.provider] else {
             return AsyncThrowingStream { continuation in
                 continuation.finish(throwing: NSError(domain: "AIService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Provider not found"]))

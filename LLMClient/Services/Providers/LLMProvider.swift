@@ -1,5 +1,10 @@
 import Foundation
 
+public enum StreamEvent {
+    case text(String)
+    case reasoning(String)
+}
+
 public protocol LLMProvider {
     var providerId: AIProvider { get }
     
@@ -14,5 +19,5 @@ public protocol LLMProvider {
         model: AIModel,
         apiKey: String,
         onUsageUpdate: @escaping (TokenUsage) -> Void
-    ) -> AsyncThrowingStream<String, Error>
+    ) -> AsyncThrowingStream<StreamEvent, Error>
 }

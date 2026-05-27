@@ -20,6 +20,7 @@ public struct OpenAIStreamResponse: Codable {
     public struct Choice: Codable {
         public struct Delta: Codable {
             public let content: String?
+            public let reasoning_content: String?
         }
         public let delta: Delta
     }
@@ -74,7 +75,7 @@ public class OpenAIProvider: LLMProvider {
         return result.choices.first?.message.content ?? ""
     }
     
-    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<String, Error> {
+    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<StreamEvent, Error> {
         return AsyncThrowingStream { continuation in
             Task {
                 do {
@@ -100,8 +101,13 @@ public class OpenAIProvider: LLMProvider {
                             guard let data = jsonStr.data(using: .utf8) else { continue }
                             do {
                                 let chunk = try JSONDecoder().decode(OpenAIStreamResponse.self, from: data)
-                                if let text = chunk.choices?.first?.delta.content {
-                                    continuation.yield(text)
+                                if let delta = chunk.choices?.first?.delta {
+                                    if let reasoning = delta.reasoning_content, !reasoning.isEmpty {
+                                        continuation.yield(.reasoning(reasoning))
+                                    }
+                                    if let text = delta.content, !text.isEmpty {
+                                        continuation.yield(.text(text))
+                                    }
                                 }
                                 if let usage = chunk.usage {
                                     let tokenUsage = TokenUsage(

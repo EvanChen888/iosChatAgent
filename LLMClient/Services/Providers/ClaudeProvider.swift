@@ -44,13 +44,15 @@ public class ClaudeProvider: LLMProvider {
         // Fallback for non-streaming, but we focus on streaming
         var responseText = ""
         let stream = streamMessage(messages, model: model, apiKey: apiKey, onUsageUpdate: { _ in })
-        for try await chunk in stream {
-            responseText += chunk
+        for try await event in stream {
+            if case .text(let text) = event {
+                responseText += text
+            }
         }
         return responseText
     }
     
-    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<String, Error> {
+    public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<StreamEvent, Error> {
         return AsyncThrowingStream { continuation in
             Task {
                 do {
@@ -110,7 +112,7 @@ public class ClaudeProvider: LLMProvider {
                                 let tokenUsage = TokenUsage(promptTokens: promptTokens, completionTokens: completionTokens, totalTokens: promptTokens + completionTokens)
                                 onUsageUpdate(tokenUsage)
                             } else if event.type == "content_block_delta", let text = event.delta?.text {
-                                continuation.yield(text)
+                                continuation.yield(.text(text))
                             }
                         }
                     }

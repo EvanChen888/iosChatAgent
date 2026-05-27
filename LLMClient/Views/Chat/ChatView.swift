@@ -24,9 +24,11 @@ public struct ChatView: View {
                             ForEach(session.messages) { message in
                                 MessageBubble(message: message)
                                     .id(message.id)
+                                    .transition(.asymmetric(insertion: .scale(scale: 0.95).combined(with: .opacity), removal: .opacity))
                             }
                         }
                         .padding()
+                        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: session.messages.count)
                     }
                     .onChange(of: session.messages.count) { _ in
                         if let lastMessage = session.messages.last {
@@ -44,20 +46,37 @@ public struct ChatView: View {
                     }
                 }
                 
-                HStack {
-                    TextField("Message...", text: $viewModel.inputText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .disabled(viewModel.isGenerating)
-                    
-                    Button(action: {
-                        viewModel.sendMessage()
-                    }) {
-                        Image(systemName: "paperplane.fill")
-                            .foregroundColor(viewModel.isGenerating || viewModel.inputText.isEmpty ? .gray : .blue)
+                VStack(spacing: 0) {
+                    Divider()
+                    HStack(alignment: .bottom) {
+                        TextField("Message...", text: $viewModel.inputText, axis: .vertical)
+                            .lineLimit(1...5)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color(uiColor: .systemBackground))
+                            .cornerRadius(20)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                            )
+                            .disabled(viewModel.isGenerating)
+                        
+                        Button(action: {
+                            viewModel.sendMessage()
+                        }) {
+                            Image(systemName: "arrow.up.circle.fill")
+                                .resizable()
+                                .frame(width: 32, height: 32)
+                                .foregroundColor(viewModel.isGenerating || viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .gray : .blue)
+                        }
+                        .disabled(viewModel.isGenerating || viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .padding(.bottom, 4)
+                        .padding(.leading, 4)
                     }
-                    .disabled(viewModel.isGenerating || viewModel.inputText.isEmpty)
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
+                    .background(.ultraThinMaterial)
                 }
-                .padding()
             } else {
                 Text("Select or create a chat to begin.")
                     .foregroundColor(.gray)
