@@ -1,8 +1,39 @@
 import Foundation
 
+public enum OpenAIMessageContent: Codable {
+    case text(String)
+    case array([OpenAIContentPart])
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .text(let string):
+            try container.encode(string)
+        case .array(let array):
+            try container.encode(array)
+        }
+    }
+}
+
+public struct OpenAIContentPart: Codable {
+    public let type: String
+    public let text: String?
+    public let image_url: OpenAIImageUrl?
+    
+    public init(type: String, text: String? = nil, image_url: OpenAIImageUrl? = nil) {
+        self.type = type
+        self.text = text
+        self.image_url = image_url
+    }
+}
+
+public struct OpenAIImageUrl: Codable {
+    public let url: String
+}
+
 public struct OpenAIRequestMessage: Codable {
     public let role: String
-    public let content: String
+    public let content: OpenAIMessageContent
 }
 
 public struct OpenAIStreamOptions: Codable {
@@ -48,7 +79,35 @@ public class OpenAIProvider: LLMProvider {
         request.addValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let apiMessages = messages.map { OpenAIRequestMessage(role: $0.role.rawValue, content: $0.content) }
+        let apiMessages = messages.map { msg -> OpenAIRequestMessage in
+            if let attachments = msg.attachments, !attachments.isEmpty {
+                var parts: [OpenAIContentPart] = []
+                parts.append(OpenAIContentPart(type: "text", text: msg.content))
+                
+                for attachment in attachments {
+                    if attachment.type == .image, let data = attachment.data {
+                        let base64 = data.base64EncodedString()
+                        let url = "data:image/jpeg;base64,\(base64)"
+                        parts.append(OpenAIContentPart(type: "image_url", image_url: OpenAIImageUrl(url: url)))
+                    } else if attachment.type == .pdf, let url = attachment.url {
+                        // Handled in view model
+                    } else if attachment.type == .text {
+                        var textContent: String? = nil
+                        if let data = attachment.data {
+                            textContent = String(data: data, encoding: .utf8)
+                        } else if let url = attachment.url {
+                            textContent = try? String(contentsOf: url)
+                        }
+                        if let text = textContent {
+                            parts.append(OpenAIContentPart(type: "text", text: "\n--- File: \(attachment.fileName ?? "") ---\n\(text)"))
+                        }
+                    }
+                }
+                return OpenAIRequestMessage(role: msg.role.rawValue, content: .array(parts))
+            } else {
+                return OpenAIRequestMessage(role: msg.role.rawValue, content: .text(msg.content))
+            }
+        }
         let streamOptions = stream ? OpenAIStreamOptions(include_usage: true) : nil
         let body = OpenAIRequest(model: model.id, messages: apiMessages, stream: stream, stream_options: streamOptions)
         request.httpBody = try JSONEncoder().encode(body)

@@ -6,9 +6,42 @@ public class ClaudeProvider: LLMProvider {
     
     public init() {}
     
-    struct AnthropicMessage: Codable {
-        let role: String
-        let content: String
+    public enum AnthropicMessageContent: Codable {
+        case text(String)
+        case array([AnthropicContentPart])
+        
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .text(let string):
+                try container.encode(string)
+            case .array(let array):
+                try container.encode(array)
+            }
+        }
+    }
+
+    public struct AnthropicImageSource: Codable {
+        public let type: String
+        public let media_type: String
+        public let data: String
+    }
+
+    public struct AnthropicContentPart: Codable {
+        public let type: String
+        public let text: String?
+        public let source: AnthropicImageSource?
+        
+        public init(type: String, text: String? = nil, source: AnthropicImageSource? = nil) {
+            self.type = type
+            self.text = text
+            self.source = source
+        }
+    }
+
+    public struct AnthropicMessage: Codable {
+        public let role: String
+        public let content: AnthropicMessageContent
     }
     
     struct AnthropicRequest: Codable {
@@ -61,11 +94,31 @@ public class ClaudeProvider: LLMProvider {
                     let systemPrompt: String? = systemMessages.isEmpty ? nil : systemMessages
                     
                     // Filter out system messages and map to Anthropic format
-                    let anthropicMessages = messages.filter { $0.role != .system && $0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false }.map {
-                        // Anthropic doesn't use "system" in the messages array, and expects strictly alternating user/assistant if possible.
-                        // For MVP, we map user/assistant roles.
-                        let roleString = $0.role == .assistant ? "assistant" : "user"
-                        return AnthropicMessage(role: roleString, content: $0.content)
+                    let anthropicMessages = messages.filter { $0.role != .system && $0.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false }.map { msg -> AnthropicMessage in
+                        let roleString = msg.role == .assistant ? "assistant" : "user"
+                        if let attachments = msg.attachments, !attachments.isEmpty {
+                            var parts: [AnthropicContentPart] = []
+                            for attachment in attachments {
+                                if attachment.type == .image, let data = attachment.data {
+                                    let base64 = data.base64EncodedString()
+                                    parts.append(AnthropicContentPart(type: "image", source: AnthropicImageSource(type: "base64", media_type: "image/jpeg", data: base64)))
+                                } else if attachment.type == .text {
+                                    var textContent: String? = nil
+                                    if let data = attachment.data {
+                                        textContent = String(data: data, encoding: .utf8)
+                                    } else if let url = attachment.url {
+                                        textContent = try? String(contentsOf: url)
+                                    }
+                                    if let text = textContent {
+                                        parts.append(AnthropicContentPart(type: "text", text: "\n--- File: \(attachment.fileName ?? "") ---\n\(text)"))
+                                    }
+                                }
+                            }
+                            parts.append(AnthropicContentPart(type: "text", text: msg.content))
+                            return AnthropicMessage(role: roleString, content: .array(parts))
+                        } else {
+                            return AnthropicMessage(role: roleString, content: .text(msg.content))
+                        }
                     }
                     
                     let requestBody = AnthropicRequest(

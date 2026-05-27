@@ -1,7 +1,18 @@
 import Foundation
 
+struct GeminiInlineData: Codable {
+    let mimeType: String
+    let data: String
+}
+
 struct GeminiPart: Codable {
-    let text: String
+    let text: String?
+    let inlineData: GeminiInlineData?
+    
+    init(text: String? = nil, inlineData: GeminiInlineData? = nil) {
+        self.text = text
+        self.inlineData = inlineData
+    }
 }
 
 struct GeminiContent: Codable {
@@ -60,7 +71,27 @@ public class GeminiProvider: LLMProvider {
                     
                     let contents = messages.filter { $0.role != .system }.map { msg -> GeminiContent in
                         let role = msg.role == .user ? "user" : "model"
-                        return GeminiContent(role: role, parts: [GeminiPart(text: msg.content)])
+                        var parts: [GeminiPart] = []
+                        if let attachments = msg.attachments, !attachments.isEmpty {
+                            for attachment in attachments {
+                                if attachment.type == .image, let data = attachment.data {
+                                    let base64 = data.base64EncodedString()
+                                    parts.append(GeminiPart(inlineData: GeminiInlineData(mimeType: "image/jpeg", data: base64)))
+                                } else if attachment.type == .text {
+                                    var textContent: String? = nil
+                                    if let data = attachment.data {
+                                        textContent = String(data: data, encoding: .utf8)
+                                    } else if let url = attachment.url {
+                                        textContent = try? String(contentsOf: url)
+                                    }
+                                    if let text = textContent {
+                                        parts.append(GeminiPart(text: "\n--- File: \(attachment.fileName ?? "") ---\n\(text)"))
+                                    }
+                                }
+                            }
+                        }
+                        parts.append(GeminiPart(text: msg.content))
+                        return GeminiContent(role: role, parts: parts)
                     }
                     
                     let requestBody = GeminiRequest(contents: contents, systemInstruction: systemInstruction)

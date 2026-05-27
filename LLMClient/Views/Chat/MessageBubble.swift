@@ -8,6 +8,47 @@ public struct MessageBubble: View {
             if message.role == .user { Spacer(minLength: 40) }
             
             VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
+                if let attachments = message.attachments, !attachments.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(attachments) { attachment in
+                                if attachment.type == .image, let data = attachment.data, let uiImage = UIImage(data: data) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 120)
+                                        .cornerRadius(8)
+                                } else if attachment.type == .pdf {
+                                    VStack {
+                                        Image(systemName: "doc.fill")
+                                            .font(.title)
+                                            .foregroundColor(.red)
+                                        Text(attachment.fileName ?? "PDF")
+                                            .font(.caption2)
+                                            .lineLimit(1)
+                                    }
+                                    .frame(width: 80, height: 120)
+                                    .background(Color(uiColor: .systemGray6))
+                                    .cornerRadius(8)
+                                } else {
+                                    VStack {
+                                        Image(systemName: "doc.text.fill")
+                                            .font(.title)
+                                            .foregroundColor(.blue)
+                                        Text(attachment.fileName ?? "File")
+                                            .font(.caption2)
+                                            .lineLimit(1)
+                                    }
+                                    .frame(width: 80, height: 120)
+                                    .background(Color(uiColor: .systemGray6))
+                                    .cornerRadius(8)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.bottom, 4)
+                }
+                
                 if let reasoning = message.reasoningContent, !reasoning.isEmpty {
                     DisclosureGroup {
                         MarkdownText(reasoning)

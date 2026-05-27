@@ -8,6 +8,8 @@ public class ChatViewModel: ObservableObject {
     
     @Published public var inputText: String = ""
     @Published public var isGenerating: Bool = false
+    @Published public var pendingAttachments: [ChatAttachment] = []
+    @Published public var pdfVisionMode: Bool = false
     
     public init() {
         let loadedSessions = ChatStorage.shared.loadSessions()
@@ -65,11 +67,32 @@ public class ChatViewModel: ObservableObject {
     
     public func sendMessage() {
         guard let index = activeSessionIndex else { return }
-        guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !pendingAttachments.isEmpty else { return }
         
-        let userMessage = ChatMessage(role: .user, content: inputText)
+        var processedAttachments: [ChatAttachment] = []
+        for attachment in pendingAttachments {
+            if attachment.type == .pdf, let url = attachment.url {
+                if pdfVisionMode {
+                    if let imagesData = PDFExtractor.convertToImages(from: url) {
+                        for data in imagesData {
+                            processedAttachments.append(ChatAttachment(type: .image, data: data, fileName: attachment.fileName))
+                        }
+                    }
+                } else {
+                    if let text = PDFExtractor.extractText(from: url) {
+                        let textData = text.data(using: String.Encoding.utf8)
+                        processedAttachments.append(ChatAttachment(type: .text, url: url, data: textData, fileName: attachment.fileName))
+                    }
+                }
+            } else {
+                processedAttachments.append(attachment)
+            }
+        }
+        
+        let userMessage = ChatMessage(role: .user, content: inputText, attachments: processedAttachments.isEmpty ? nil : processedAttachments)
         sessions[index].messages.append(userMessage)
         inputText = ""
+        pendingAttachments = []
         isGenerating = true
         
         // Add empty assistant message to stream into

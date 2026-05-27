@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		012B98F39745664E1EA8723B /* PDFExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8570C717BE7A39F35C3CDE6A /* PDFExtractor.swift */; };
 		16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3C527E9D63A2678E8544B2 /* MessageBubble.swift */; };
 		1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BECD8F1CB352EEA080EB89 /* ProviderSettingsView.swift */; };
 		226E688CA5A4A50F079699E0 /* ChatStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEA5B75A78EEDB3C78E0114 /* ChatStorage.swift */; };
@@ -48,6 +49,7 @@
 		706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClientApp.swift; sourceTree = "<group>"; };
 		735DD40725ABC37D5DB92B42 /* DeepSeekProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekProvider.swift; sourceTree = "<group>"; };
 		78C7AE64CF18D503F665408B /* LLMClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LLMClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8570C717BE7A39F35C3CDE6A /* PDFExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExtractor.swift; sourceTree = "<group>"; };
 		9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsage.swift; sourceTree = "<group>"; };
 		9FC54B11739AA31CE9210617 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		A6B574E1AFB7E0C6654502EE /* LLMProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMProvider.swift; sourceTree = "<group>"; };
@@ -85,6 +87,7 @@
 		1805B3EC4373C5C944D60146 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				8570C717BE7A39F35C3CDE6A /* PDFExtractor.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				16D7446CFEC363F420320F92 /* MessageBubble.swift in Sources */,
 				4EE32CC8AE05B33496044839 /* ModelPicker.swift in Sources */,
 				F13A1DD7AB27B1EF5BFEBFBA /* OpenAIProvider.swift in Sources */,
+				012B98F39745664E1EA8723B /* PDFExtractor.swift in Sources */,
 				2C477FA60B43985A9C93BA78 /* PricingModel.swift in Sources */,
 				1A45873F7CEAA388DBBCBC22 /* ProviderSettingsView.swift in Sources */,
 				F2ECD811760BE9D3ED34D0B7 /* SettingsViewModel.swift in Sources */,
