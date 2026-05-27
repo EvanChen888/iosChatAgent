@@ -24,5 +24,6 @@ targets:
       path: Info.plist
       properties:
         UILaunchStoryboardName: LaunchScreen
+        NSCameraUsageDescription: "We need access to your camera to take photos and attach them to the chat."
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
