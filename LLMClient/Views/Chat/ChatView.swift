@@ -11,6 +11,8 @@ public struct ChatView: View {
     @State private var showingDeepSeekAlert = false
     @State private var showingCamera = false
     @State private var previewImage: UIImage? = nil
+    @State private var cachedSession: ChatSession? = nil
+    @FocusState private var isInputFocused: Bool
     
     public init(viewModel: ChatViewModel) {
         self.viewModel = viewModel
@@ -21,6 +23,13 @@ public struct ChatView: View {
             return viewModel.sessions[index]
         }
         return nil
+    }
+    
+    private var displaySession: ChatSession? {
+        if let session = activeSession {
+            return session
+        }
+        return cachedSession
     }
     
     private func processAndAppendImage(_ uiImage: UIImage) {
@@ -60,36 +69,48 @@ public struct ChatView: View {
     }
     
     public var body: some View {
-        VStack {
-            if let session = activeSession {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(session.messages) { message in
-                                MessageBubble(message: message)
-                                    .id(message.id)
-                                    .transition(.asymmetric(insertion: .scale(scale: 0.95).combined(with: .opacity), removal: .opacity))
+        VStack(spacing: 0) {
+            ZStack {
+                if let session = displaySession {
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(spacing: 12) {
+                                ForEach(session.messages) { message in
+                                    MessageBubble(message: message)
+                                        .equatable()
+                                        .id(message.id)
+                                        .transition(.asymmetric(insertion: .scale(scale: 0.95).combined(with: .opacity), removal: .opacity))
+                                }
+                            }
+                            .padding()
+                            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: session.messages.count)
+                        }
+                        .scrollDismissesKeyboard(.interactively)
+                        .onChange(of: session.messages.count) { _ in
+                            if let lastMessage = session.messages.last {
+                                withAnimation {
+                                    proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                                }
                             }
                         }
-                        .padding()
-                        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: session.messages.count)
-                    }
-                    .onChange(of: session.messages.count) { _ in
-                        if let lastMessage = session.messages.last {
-                            withAnimation {
-                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                        .onChange(of: session.messages.last?.content) { _ in
+                            if let lastMessage = session.messages.last {
+                                withAnimation {
+                                    proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                                }
                             }
                         }
                     }
-                    .onChange(of: session.messages.last?.content) { _ in
-                        if let lastMessage = session.messages.last {
-                            withAnimation {
-                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                            }
-                        }
-                    }
+                } else {
+                    Text("Select or create a chat to begin.")
+                        .foregroundColor(.gray)
                 }
-                
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .disabled(displaySession == nil)
+            .opacity(displaySession == nil ? 0.5 : 1.0)
+            
+            if displaySession != nil {
                 VStack(spacing: 0) {
                     Divider()
                     
@@ -165,8 +186,8 @@ public struct ChatView: View {
                             processSelectedPhoto(newItem)
                         }
                         
-                        TextField("Message...", text: $viewModel.inputText, axis: .vertical)
-                            .lineLimit(1...5)
+                        TextField("Message...", text: $viewModel.inputText)
+                            .focused($isInputFocused)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .background(Color(uiColor: .systemBackground))
@@ -197,12 +218,9 @@ public struct ChatView: View {
                     .padding(.vertical, 12)
                     .background(.ultraThinMaterial)
                 }
-            } else {
-                Text("Select or create a chat to begin.")
-                    .foregroundColor(.gray)
             }
         }
-        .navigationTitle(activeSession?.title ?? "Chat")
+        .navigationTitle(displaySession?.title ?? "Chat")
         .toolbar {
             ToolbarItem(placement: .principal) {
                 ModelPicker(viewModel: viewModel)

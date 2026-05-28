@@ -1,9 +1,13 @@
 import SwiftUI
 
-public struct MessageBubble: View {
+public struct MessageBubble: View, Equatable {
     public let message: ChatMessage
     
     @State private var selectedImage: UIImage? = nil
+    
+    public static func == (lhs: MessageBubble, rhs: MessageBubble) -> Bool {
+        lhs.message == rhs.message
+    }
     
     public var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
