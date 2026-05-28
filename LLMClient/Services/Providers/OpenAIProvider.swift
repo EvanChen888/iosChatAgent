@@ -90,7 +90,9 @@ public class OpenAIProvider: LLMProvider {
                         let url = "data:image/jpeg;base64,\(base64)"
                         parts.append(OpenAIContentPart(type: "image_url", image_url: OpenAIImageUrl(url: url)))
                     } else if attachment.type == .pdf {
-                        // Handled in view model
+                        if let data = attachment.data, let text = PDFExtractor.extractText(from: data) {
+                            parts.append(OpenAIContentPart(type: "text", text: "\n[Content of \(attachment.fileName ?? "PDF")]:\n\(text)"))
+                        }
                     } else if attachment.type == .text {
                         var textContent: String? = nil
                         if let data = attachment.data {

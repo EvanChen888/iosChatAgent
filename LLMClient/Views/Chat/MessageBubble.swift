@@ -2,8 +2,8 @@ import SwiftUI
 
 public struct MessageBubble: View, Equatable {
     public let message: ChatMessage
-    
-    @State private var selectedImage: UIImage? = nil
+    public var onImageTap: ((UIImage) -> Void)?
+    public var onAttachmentTap: ((ChatAttachment) -> Void)?
     
     public static func == (lhs: MessageBubble, rhs: MessageBubble) -> Bool {
         lhs.message == rhs.message
@@ -26,7 +26,7 @@ public struct MessageBubble: View, Equatable {
                                         .clipped()
                                         .cornerRadius(8)
                                         .onTapGesture {
-                                            selectedImage = uiImage
+                                            onImageTap?(uiImage)
                                         }
                                 } else if attachment.type == .pdf {
                                     VStack {
@@ -40,6 +40,9 @@ public struct MessageBubble: View, Equatable {
                                     .frame(width: 80, height: 120)
                                     .background(Color(uiColor: .systemGray6))
                                     .cornerRadius(8)
+                                    .onTapGesture {
+                                        onAttachmentTap?(attachment)
+                                    }
                                 } else {
                                     VStack {
                                         Image(systemName: "doc.text.fill")
@@ -52,6 +55,9 @@ public struct MessageBubble: View, Equatable {
                                     .frame(width: 80, height: 120)
                                     .background(Color(uiColor: .systemGray6))
                                     .cornerRadius(8)
+                                    .onTapGesture {
+                                        onAttachmentTap?(attachment)
+                                    }
                                 }
                             }
                         }
@@ -115,14 +121,6 @@ public struct MessageBubble: View, Equatable {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .fullScreenCover(isPresented: Binding(
-            get: { selectedImage != nil },
-            set: { if !$0 { selectedImage = nil } }
-        )) {
-            if let img = selectedImage {
-                FullScreenImageView(image: img)
-            }
-        }
     }
 }
 

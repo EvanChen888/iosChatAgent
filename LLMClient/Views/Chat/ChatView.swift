@@ -10,7 +10,6 @@ public struct ChatView: View {
     @State private var showingFileImporter = false
     @State private var showingDeepSeekAlert = false
     @State private var showingCamera = false
-    @State private var previewImage: UIImage? = nil
     @State private var cachedSession: ChatSession? = nil
     @FocusState private var isInputFocused: Bool
     
@@ -33,22 +32,24 @@ public struct ChatView: View {
     }
     
     private func processAndAppendImage(_ uiImage: UIImage) {
-        let maxDimension: CGFloat = 2048
-        var size = uiImage.size
-        if size.width > maxDimension || size.height > maxDimension {
-            let ratio = min(maxDimension / size.width, maxDimension / size.height)
-            size = CGSize(width: size.width * ratio, height: size.height * ratio)
-        }
-        
-        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-        uiImage.draw(in: CGRect(origin: .zero, size: size))
-        let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
-        UIGraphicsEndImageContext()
-        
-        if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
-            let attachment = ChatAttachment(type: .image, data: jpegData)
-            DispatchQueue.main.async {
-                viewModel.pendingAttachments.append(attachment)
+        Task.detached {
+            let maxDimension: CGFloat = 2048
+            var size = uiImage.size
+            if size.width > maxDimension || size.height > maxDimension {
+                let ratio = min(maxDimension / size.width, maxDimension / size.height)
+                size = CGSize(width: size.width * ratio, height: size.height * ratio)
+            }
+            
+            UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
+            uiImage.draw(in: CGRect(origin: .zero, size: size))
+            let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
+            UIGraphicsEndImageContext()
+            
+            if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
+                let attachment = ChatAttachment(type: .image, data: jpegData)
+                await MainActor.run {
+                    self.viewModel.pendingAttachments.append(attachment)
+                }
             }
         }
     }
@@ -76,7 +77,11 @@ public struct ChatView: View {
                         ScrollView {
                             LazyVStack(spacing: 12) {
                                 ForEach(session.messages) { message in
-                                    MessageBubble(message: message)
+                                    MessageBubble(message: message, onImageTap: { img in
+                                        viewModel.previewImage = img
+                                    }, onAttachmentTap: { att in
+                                        viewModel.selectedAttachment = att
+                                    })
                                         .equatable()
                                         .id(message.id)
                                         .transition(.asymmetric(insertion: .scale(scale: 0.95).combined(with: .opacity), removal: .opacity))
@@ -88,23 +93,21 @@ public struct ChatView: View {
                         .scrollDismissesKeyboard(.interactively)
                         .onChange(of: session.messages.count) { _ in
                             if let lastMessage = session.messages.last {
-                                withAnimation {
+                                withAnimation(.easeOut(duration: 0.3)) {
                                     proxy.scrollTo(lastMessage.id, anchor: .bottom)
                                 }
                             }
                         }
                         .onChange(of: session.messages.last?.content) { _ in
                             if let lastMessage = session.messages.last {
-                                withAnimation {
-                                    proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                                }
+                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
                             }
                         }
                         .overlay(alignment: .bottomTrailing) {
                             if !session.messages.isEmpty {
                                 Button(action: {
                                     if let lastMessage = session.messages.last {
-                                        withAnimation {
+                                        withAnimation(.easeOut(duration: 0.3)) {
                                             proxy.scrollTo(lastMessage.id, anchor: .bottom)
                                         }
                                     }
@@ -145,19 +148,38 @@ public struct ChatView: View {
                                                 .frame(width: 60, height: 60)
                                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                                 .onTapGesture {
-                                                    previewImage = uiImage
+                                                    viewModel.previewImage = uiImage
                                                 }
                                         } else if attachment.type == .pdf {
                                             VStack {
                                                 Image(systemName: "doc.fill")
                                                     .font(.title)
                                                     .foregroundColor(.red)
-                                                Text("PDF")
+                                                Text(attachment.fileName ?? "PDF")
                                                     .font(.caption2)
+                                                    .lineLimit(1)
                                             }
                                             .frame(width: 60, height: 60)
                                             .background(Color(uiColor: .systemGray6))
                                             .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .onTapGesture {
+                                                viewModel.selectedAttachment = attachment
+                                            }
+                                        } else {
+                                            VStack {
+                                                Image(systemName: "doc.text.fill")
+                                                    .font(.title)
+                                                    .foregroundColor(.blue)
+                                                Text(attachment.fileName ?? "File")
+                                                    .font(.caption2)
+                                                    .lineLimit(1)
+                                            }
+                                            .frame(width: 60, height: 60)
+                                            .background(Color(uiColor: .systemGray6))
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .onTapGesture {
+                                                viewModel.selectedAttachment = attachment
+                                            }
                                         }
                                         
                                         Button(action: {
@@ -206,14 +228,6 @@ public struct ChatView: View {
                         
                         TextField("Message...", text: $viewModel.inputText)
                             .focused($isInputFocused)
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        isInputFocused = false
-                                    }
-                                }
-                            }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .background(Color(uiColor: .systemBackground))
@@ -296,14 +310,6 @@ public struct ChatView: View {
                 processAndAppendImage(uiImage)
             }
             .ignoresSafeArea()
-        }
-        .fullScreenCover(isPresented: Binding(
-            get: { previewImage != nil },
-            set: { if !$0 { previewImage = nil } }
-        )) {
-            if let img = previewImage {
-                FullScreenImageView(image: img)
-            }
         }
     }
 }

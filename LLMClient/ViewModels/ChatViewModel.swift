@@ -9,6 +9,8 @@ public class ChatViewModel: ObservableObject {
     @Published public var inputText: String = ""
     @Published public var isGenerating: Bool = false
     @Published public var pendingAttachments: [ChatAttachment] = []
+    @Published public var previewImage: UIImage? = nil
+    @Published public var selectedAttachment: ChatAttachment? = nil
     @Published public var pdfVisionMode: Bool = false
     
     public init() {
@@ -93,10 +95,7 @@ public class ChatViewModel: ObservableObject {
                                 }
                             }
                         } else {
-                            if let text = PDFExtractor.extractText(from: data) {
-                                let textData = text.data(using: String.Encoding.utf8)
-                                processed.append(ChatAttachment(type: .text, url: attachment.url, data: textData, fileName: attachment.fileName))
-                            }
+                            processed.append(attachment)
                         }
                     } else {
                         processed.append(attachment)
