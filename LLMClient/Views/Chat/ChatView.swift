@@ -23,29 +23,33 @@ public struct ChatView: View {
         return nil
     }
     
+    private func processAndAppendImage(_ uiImage: UIImage) {
+        let maxDimension: CGFloat = 2048
+        var size = uiImage.size
+        if size.width > maxDimension || size.height > maxDimension {
+            let ratio = min(maxDimension / size.width, maxDimension / size.height)
+            size = CGSize(width: size.width * ratio, height: size.height * ratio)
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
+        uiImage.draw(in: CGRect(origin: .zero, size: size))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
+        UIGraphicsEndImageContext()
+        
+        if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
+            let attachment = ChatAttachment(type: .image, data: jpegData)
+            DispatchQueue.main.async {
+                viewModel.pendingAttachments.append(attachment)
+            }
+        }
+    }
+    
     private func processSelectedPhoto(_ item: PhotosPickerItem?) {
         guard let item = item else { return }
         Task {
             if let data = try? await item.loadTransferable(type: Data.self) {
                 if let uiImage = UIImage(data: data) {
-                    let maxDimension: CGFloat = 2048
-                    var size = uiImage.size
-                    if size.width > maxDimension || size.height > maxDimension {
-                        let ratio = min(maxDimension / size.width, maxDimension / size.height)
-                        size = CGSize(width: size.width * ratio, height: size.height * ratio)
-                    }
-                    
-                    UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-                    uiImage.draw(in: CGRect(origin: .zero, size: size))
-                    let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
-                    UIGraphicsEndImageContext()
-                    
-                    if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
-                        let attachment = ChatAttachment(type: .image, data: jpegData)
-                        DispatchQueue.main.async {
-                            viewModel.pendingAttachments.append(attachment)
-                        }
-                    }
+                    processAndAppendImage(uiImage)
                 }
             }
             
@@ -245,25 +249,7 @@ public struct ChatView: View {
         .photosPicker(isPresented: $showingPhotoPicker, selection: $selectedPhotoItem, matching: .images)
         .fullScreenCover(isPresented: $showingCamera) {
             ImagePicker(sourceType: .camera) { uiImage in
-                // Process and compress captured image
-                let maxDimension: CGFloat = 2048
-                var size = uiImage.size
-                if size.width > maxDimension || size.height > maxDimension {
-                    let ratio = min(maxDimension / size.width, maxDimension / size.height)
-                    size = CGSize(width: size.width * ratio, height: size.height * ratio)
-                }
-                
-                UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
-                uiImage.draw(in: CGRect(origin: .zero, size: size))
-                let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
-                UIGraphicsEndImageContext()
-                
-                if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
-                    let attachment = ChatAttachment(type: .image, data: jpegData)
-                    DispatchQueue.main.async {
-                        viewModel.pendingAttachments.append(attachment)
-                    }
-                }
+                processAndAppendImage(uiImage)
             }
             .ignoresSafeArea()
         }

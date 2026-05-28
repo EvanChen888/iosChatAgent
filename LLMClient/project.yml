@@ -1,6 +1,6 @@
 name: LLMClient
 options:
-  bundleIdPrefix: com.example
+  bundleIdPrefix: com.evanchen
 packages:
   MarkdownUI:
     url: https://github.com/gonzalezreal/swift-markdown-ui
@@ -20,6 +20,10 @@ targets:
       - path: Resources
     dependencies:
       - package: MarkdownUI
+    settings:
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      DEVELOPMENT_TEAM: MNSNUB5U87
+      CODE_SIGN_STYLE: Automatic
     info:
       path: Info.plist
       properties:

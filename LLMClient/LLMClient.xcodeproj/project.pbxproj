@@ -24,6 +24,7 @@
 		75CCFC1A51F048943C90FB8F /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC54B11739AA31CE9210617 /* SidebarView.swift */; };
 		80D136EBB63706A9BC80CA99 /* ClaudeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC1C5D77661D71767C6AA87B /* ClaudeProvider.swift */; };
 		8728F7F52D2C7A5F3A2DC2DD /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570C51DD8DED42A1A672059A /* ChatViewModel.swift */; };
+		9B268999EAA4917408CC9767 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07FD1C9E2EDC901EE1E76A7E /* Assets.xcassets */; };
 		9D8EF4D7F8D49EC566931A9E /* LLMClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */; };
 		D6E1107216C8096E9237A011 /* ChatSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456E50BD78DF2B88F6170525 /* ChatSession.swift */; };
 		DB361A3B94AF899C3FBB00FF /* TokenUsage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		05918AAD944911858777CA0B /* APIKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyView.swift; sourceTree = "<group>"; };
+		07FD1C9E2EDC901EE1E76A7E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		200B577B7A1FE31FCC29985E /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		22504312AC2777FB40CBDFB0 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		253B2F147ACA170458A329E4 /* GeminiProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeminiProvider.swift; sourceTree = "<group>"; };
@@ -49,7 +51,7 @@
 		69A4294D229CCF0A7DFB9DB9 /* AIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIService.swift; sourceTree = "<group>"; };
 		706DC4C7DEE0A8D4001BB2BE /* LLMClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMClientApp.swift; sourceTree = "<group>"; };
 		735DD40725ABC37D5DB92B42 /* DeepSeekProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepSeekProvider.swift; sourceTree = "<group>"; };
-		78C7AE64CF18D503F665408B /* LLMClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LLMClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		78C7AE64CF18D503F665408B /* LLMClient.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LLMClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8570C717BE7A39F35C3CDE6A /* PDFExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExtractor.swift; sourceTree = "<group>"; };
 		9ABB14A3FF67310B1DC076F1 /* TokenUsage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenUsage.swift; sourceTree = "<group>"; };
 		9FC54B11739AA31CE9210617 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 		F78A76E7B3AEF055912DD12F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				07FD1C9E2EDC901EE1E76A7E /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 			buildConfigurationList = 7F0F6E997D80280CB1ADD036 /* Build configuration list for PBXNativeTarget "LLMClient" */;
 			buildPhases = (
 				0440D1E60A35D2D7A10984E1 /* Sources */,
+				EC77AA439C4331733C17B659 /* Resources */,
 				68E41E5A427A5403EB2CB90E /* Frameworks */,
 			);
 			buildRules = (
@@ -253,6 +257,12 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					32F9C204BEE7F947AD94380A = {
+						DevelopmentTeam = MNSNUB5U87;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 732EF4B2C96AEE16EE486036 /* Build configuration list for PBXProject "LLMClient" */;
 			developmentRegion = en;
@@ -275,6 +285,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EC77AA439C4331733C17B659 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9B268999EAA4917408CC9767 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0440D1E60A35D2D7A10984E1 /* Sources */ = {
@@ -380,6 +401,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MNSNUB5U87;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -387,7 +409,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.evan.LLMClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evanchen.LLMClient;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -453,6 +475,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MNSNUB5U87;
 				INFOPLIST_FILE = Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -460,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.evan.LLMClient;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evanchen.LLMClient;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

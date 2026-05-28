@@ -69,44 +69,54 @@ public class ChatViewModel: ObservableObject {
         guard let index = activeSessionIndex else { return }
         guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !pendingAttachments.isEmpty else { return }
         
-        var processedAttachments: [ChatAttachment] = []
-        for attachment in pendingAttachments {
-            if attachment.type == .pdf, let data = attachment.data {
-                if pdfVisionMode {
-                    if let imagesData = PDFExtractor.convertToImages(from: data) {
-                        for imgData in imagesData {
-                            processedAttachments.append(ChatAttachment(type: .image, data: imgData, fileName: attachment.fileName))
-                        }
-                    }
-                } else {
-                    if let text = PDFExtractor.extractText(from: data) {
-                        let textData = text.data(using: String.Encoding.utf8)
-                        processedAttachments.append(ChatAttachment(type: .text, url: attachment.url, data: textData, fileName: attachment.fileName))
-                    }
-                }
-            } else {
-                processedAttachments.append(attachment)
-            }
-        }
+        let targetSessionId = sessions[index].id
+        let currentInput = inputText
+        let currentAttachments = pendingAttachments
+        let isPdfVision = pdfVisionMode
         
-        let userMessage = ChatMessage(role: .user, content: inputText, attachments: processedAttachments.isEmpty ? nil : processedAttachments)
-        sessions[index].messages.append(userMessage)
         inputText = ""
         pendingAttachments = []
         isGenerating = true
         
-        // Add empty assistant message to stream into
-        let assistantMessage = ChatMessage(role: .assistant, content: "")
-        sessions[index].messages.append(assistantMessage)
-        let messageIndex = sessions[index].messages.count - 1
-        
-        saveSessions()
-        
         guard let model = activeModel else { return }
         
-        let targetSessionId = sessions[index].id
-        
         Task {
+            // Process PDF attachments on a background thread to prevent UI freezing
+            let processedAttachments = await Task.detached {
+                var processed: [ChatAttachment] = []
+                for attachment in currentAttachments {
+                    if attachment.type == .pdf, let data = attachment.data {
+                        if isPdfVision {
+                            if let imagesData = PDFExtractor.convertToImages(from: data) {
+                                for imgData in imagesData {
+                                    processed.append(ChatAttachment(type: .image, data: imgData, fileName: attachment.fileName))
+                                }
+                            }
+                        } else {
+                            if let text = PDFExtractor.extractText(from: data) {
+                                let textData = text.data(using: String.Encoding.utf8)
+                                processed.append(ChatAttachment(type: .text, url: attachment.url, data: textData, fileName: attachment.fileName))
+                            }
+                        }
+                    } else {
+                        processed.append(attachment)
+                    }
+                }
+                return processed
+            }.value
+            
+            guard let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) else { return }
+            
+            let userMessage = ChatMessage(role: .user, content: currentInput, attachments: processedAttachments.isEmpty ? nil : processedAttachments)
+            self.sessions[currentIndex].messages.append(userMessage)
+            
+            // Add empty assistant message to stream into
+            let assistantMessage = ChatMessage(role: .assistant, content: "")
+            self.sessions[currentIndex].messages.append(assistantMessage)
+            let messageIndex = self.sessions[currentIndex].messages.count - 1
+            
+            self.saveSessions()
+            
             let apiKey = KeychainManager.shared.get(for: model.provider) ?? ""
             if apiKey.isEmpty {
                 if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {

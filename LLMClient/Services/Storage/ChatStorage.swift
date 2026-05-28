@@ -12,11 +12,14 @@ public class ChatStorage {
     }
     
     public func saveSessions(_ sessions: [ChatSession]) {
-        do {
-            let data = try JSONEncoder().encode(sessions)
-            try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
-        } catch {
-            print("Failed to save chat sessions: \(error)")
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let self = self else { return }
+            do {
+                let data = try JSONEncoder().encode(sessions)
+                try data.write(to: self.fileURL, options: [.atomic, .completeFileProtection])
+            } catch {
+                print("Failed to save chat sessions: \(error)")
+            }
         }
     }
     

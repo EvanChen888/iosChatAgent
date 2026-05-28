@@ -1,6 +1,5 @@
 import Foundation
 import PDFKit
-import Vision
 
 public class PDFExtractor {
     
@@ -26,31 +25,6 @@ public class PDFExtractor {
         }
         
         return extractedText.isEmpty ? nil : extractedText
-    }
-    
-    private static func performOCR(on page: PDFPage) -> String? {
-        let pageRect = page.bounds(for: .mediaBox)
-        let image = page.thumbnail(of: pageRect.size, for: .mediaBox)
-        
-        guard let cgImage = image.cgImage else { return nil }
-        
-        let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-        let request = VNRecognizeTextRequest()
-        request.recognitionLevel = .accurate
-        
-        do {
-            try requestHandler.perform([request])
-            guard let observations = request.results else { return nil }
-            
-            let recognizedText = observations.compactMap { observation in
-                observation.topCandidates(1).first?.string
-            }.joined(separator: "\n")
-            
-            return recognizedText
-        } catch {
-            print("OCR Error: \(error)")
-            return nil
-        }
     }
     
     public static func convertToImages(from data: Data) -> [Data]? {
