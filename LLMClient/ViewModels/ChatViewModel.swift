@@ -71,17 +71,17 @@ public class ChatViewModel: ObservableObject {
         
         var processedAttachments: [ChatAttachment] = []
         for attachment in pendingAttachments {
-            if attachment.type == .pdf, let url = attachment.url {
+            if attachment.type == .pdf, let data = attachment.data {
                 if pdfVisionMode {
-                    if let imagesData = PDFExtractor.convertToImages(from: url) {
-                        for data in imagesData {
-                            processedAttachments.append(ChatAttachment(type: .image, data: data, fileName: attachment.fileName))
+                    if let imagesData = PDFExtractor.convertToImages(from: data) {
+                        for imgData in imagesData {
+                            processedAttachments.append(ChatAttachment(type: .image, data: imgData, fileName: attachment.fileName))
                         }
                     }
                 } else {
-                    if let text = PDFExtractor.extractText(from: url) {
+                    if let text = PDFExtractor.extractText(from: data) {
                         let textData = text.data(using: String.Encoding.utf8)
-                        processedAttachments.append(ChatAttachment(type: .text, url: url, data: textData, fileName: attachment.fileName))
+                        processedAttachments.append(ChatAttachment(type: .text, url: attachment.url, data: textData, fileName: attachment.fileName))
                     }
                 }
             } else {
@@ -125,17 +125,46 @@ public class ChatViewModel: ObservableObject {
                         }
                     }
                 }
+                var accumulatedText = ""
+                var accumulatedReasoning = ""
+                var lastUpdateTime = Date()
+                
                 for try await event in stream {
-                    if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
-                        switch event {
-                        case .text(let text):
-                            sessions[currentIndex].messages[messageIndex].content += text
-                        case .reasoning(let text):
-                            if sessions[currentIndex].messages[messageIndex].reasoningContent == nil {
-                                sessions[currentIndex].messages[messageIndex].reasoningContent = ""
+                    switch event {
+                    case .text(let text):
+                        accumulatedText += text
+                    case .reasoning(let text):
+                        accumulatedReasoning += text
+                    }
+                    
+                    if Date().timeIntervalSince(lastUpdateTime) > 0.05 {
+                        if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
+                            if !accumulatedText.isEmpty {
+                                sessions[currentIndex].messages[messageIndex].content += accumulatedText
+                                accumulatedText = ""
                             }
-                            sessions[currentIndex].messages[messageIndex].reasoningContent? += text
+                            if !accumulatedReasoning.isEmpty {
+                                if sessions[currentIndex].messages[messageIndex].reasoningContent == nil {
+                                    sessions[currentIndex].messages[messageIndex].reasoningContent = ""
+                                }
+                                sessions[currentIndex].messages[messageIndex].reasoningContent? += accumulatedReasoning
+                                accumulatedReasoning = ""
+                            }
                         }
+                        lastUpdateTime = Date()
+                    }
+                }
+                
+                // Flush remaining text
+                if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
+                    if !accumulatedText.isEmpty {
+                        sessions[currentIndex].messages[messageIndex].content += accumulatedText
+                    }
+                    if !accumulatedReasoning.isEmpty {
+                        if sessions[currentIndex].messages[messageIndex].reasoningContent == nil {
+                            sessions[currentIndex].messages[messageIndex].reasoningContent = ""
+                        }
+                        sessions[currentIndex].messages[messageIndex].reasoningContent? += accumulatedReasoning
                     }
                 }
             } catch {

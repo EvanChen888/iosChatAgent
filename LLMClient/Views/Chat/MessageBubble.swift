@@ -3,6 +3,8 @@ import SwiftUI
 public struct MessageBubble: View {
     public let message: ChatMessage
     
+    @State private var selectedImage: UIImage? = nil
+    
     public var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             if message.role == .user { Spacer(minLength: 40) }
@@ -16,8 +18,12 @@ public struct MessageBubble: View {
                                     Image(uiImage: uiImage)
                                         .resizable()
                                         .scaledToFill()
-                                        .frame(height: 120)
+                                        .frame(width: 120, height: 120)
+                                        .clipped()
                                         .cornerRadius(8)
+                                        .onTapGesture {
+                                            selectedImage = uiImage
+                                        }
                                 } else if attachment.type == .pdf {
                                     VStack {
                                         Image(systemName: "doc.fill")
@@ -105,6 +111,55 @@ public struct MessageBubble: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
+        .fullScreenCover(isPresented: Binding(
+            get: { selectedImage != nil },
+            set: { if !$0 { selectedImage = nil } }
+        )) {
+            if let img = selectedImage {
+                FullScreenImageView(image: img)
+            }
+        }
+    }
+}
+
+struct FullScreenImageView: View {
+    let image: UIImage
+    @Environment(\.dismiss) private var dismiss
+    @State private var scale: CGFloat = 1.0
+    
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+            
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .scaleEffect(scale)
+                .gesture(
+                    MagnificationGesture()
+                        .onChanged { value in
+                            scale = value.magnitude
+                        }
+                        .onEnded { _ in
+                            withAnimation {
+                                scale = 1.0
+                            }
+                        }
+                )
+            
+            VStack {
+                HStack {
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(.white)
+                            .padding()
+                    }
+                }
+                Spacer()
+            }
+        }
     }
 }
 

@@ -10,6 +10,7 @@ public struct ChatView: View {
     @State private var showingFileImporter = false
     @State private var showingDeepSeekAlert = false
     @State private var showingCamera = false
+    @State private var previewImage: UIImage? = nil
     
     public init(viewModel: ChatViewModel) {
         self.viewModel = viewModel
@@ -100,6 +101,9 @@ public struct ChatView: View {
                                                 .scaledToFill()
                                                 .frame(width: 60, height: 60)
                                                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                .onTapGesture {
+                                                    previewImage = uiImage
+                                                }
                                         } else if attachment.type == .pdf {
                                             VStack {
                                                 Image(systemName: "doc.fill")
@@ -217,9 +221,14 @@ public struct ChatView: View {
                     defer { url.stopAccessingSecurityScopedResource() }
                     let ext = url.pathExtension.lowercased()
                     let type: ChatAttachment.AttachmentType = (ext == "pdf") ? .pdf : .text
-                    let attachment = ChatAttachment(type: type, url: url, fileName: url.lastPathComponent)
-                    DispatchQueue.main.async {
-                        viewModel.pendingAttachments.append(attachment)
+                    
+                    if let data = try? Data(contentsOf: url) {
+                        let attachment = ChatAttachment(type: type, url: url, data: data, fileName: url.lastPathComponent)
+                        DispatchQueue.main.async {
+                            viewModel.pendingAttachments.append(attachment)
+                        }
+                    } else {
+                        print("Failed to read data from URL: \(url)")
                     }
                 }
             case .failure(let error):
@@ -257,6 +266,14 @@ public struct ChatView: View {
                 }
             }
             .ignoresSafeArea()
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { previewImage != nil },
+            set: { if !$0 { previewImage = nil } }
+        )) {
+            if let img = previewImage {
+                FullScreenImageView(image: img)
+            }
         }
     }
 }

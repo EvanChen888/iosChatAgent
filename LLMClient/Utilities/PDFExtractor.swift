@@ -9,8 +9,8 @@ public class PDFExtractor {
         case vision
     }
     
-    public static func extractText(from url: URL) -> String? {
-        guard let document = PDFDocument(url: url) else {
+    public static func extractText(from data: Data) -> String? {
+        guard let document = PDFDocument(data: data) else {
             return nil
         }
         
@@ -58,8 +58,8 @@ public class PDFExtractor {
         }
     }
     
-    public static func convertToImages(from url: URL) -> [Data]? {
-        guard let document = PDFDocument(url: url) else {
+    public static func convertToImages(from data: Data) -> [Data]? {
+        guard let document = PDFDocument(data: data) else {
             return nil
         }
         
