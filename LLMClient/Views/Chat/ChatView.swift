@@ -100,6 +100,24 @@ public struct ChatView: View {
                                 }
                             }
                         }
+                        .overlay(alignment: .bottomTrailing) {
+                            if !session.messages.isEmpty {
+                                Button(action: {
+                                    if let lastMessage = session.messages.last {
+                                        withAnimation {
+                                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: "arrow.down.circle.fill")
+                                        .resizable()
+                                        .frame(width: 36, height: 36)
+                                        .foregroundColor(.blue.opacity(0.8))
+                                        .background(Circle().fill(Color.white).shadow(radius: 2))
+                                }
+                                .padding()
+                            }
+                        }
                     }
                 } else {
                     Text("Select or create a chat to begin.")
@@ -188,6 +206,14 @@ public struct ChatView: View {
                         
                         TextField("Message...", text: $viewModel.inputText)
                             .focused($isInputFocused)
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+                                    Button("Done") {
+                                        isInputFocused = false
+                                    }
+                                }
+                            }
                             .padding(.horizontal, 16)
                             .padding(.vertical, 10)
                             .background(Color(uiColor: .systemBackground))
