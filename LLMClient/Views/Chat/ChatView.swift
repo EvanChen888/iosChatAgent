@@ -28,7 +28,7 @@ public struct ChatView: View {
         Task {
             if let data = try? await item.loadTransferable(type: Data.self) {
                 if let uiImage = UIImage(data: data) {
-                    let maxDimension: CGFloat = 1024
+                    let maxDimension: CGFloat = 2048
                     var size = uiImage.size
                     if size.width > maxDimension || size.height > maxDimension {
                         let ratio = min(maxDimension / size.width, maxDimension / size.height)
@@ -40,7 +40,7 @@ public struct ChatView: View {
                     let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
                     UIGraphicsEndImageContext()
                     
-                    if let jpegData = resizedImage.jpegData(compressionQuality: 0.6) {
+                    if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
                         let attachment = ChatAttachment(type: .image, data: jpegData)
                         DispatchQueue.main.async {
                             viewModel.pendingAttachments.append(attachment)
@@ -246,7 +246,7 @@ public struct ChatView: View {
         .fullScreenCover(isPresented: $showingCamera) {
             ImagePicker(sourceType: .camera) { uiImage in
                 // Process and compress captured image
-                let maxDimension: CGFloat = 1024
+                let maxDimension: CGFloat = 2048
                 var size = uiImage.size
                 if size.width > maxDimension || size.height > maxDimension {
                     let ratio = min(maxDimension / size.width, maxDimension / size.height)
@@ -258,7 +258,7 @@ public struct ChatView: View {
                 let resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? uiImage
                 UIGraphicsEndImageContext()
                 
-                if let jpegData = resizedImage.jpegData(compressionQuality: 0.6) {
+                if let jpegData = resizedImage.jpegData(compressionQuality: 0.85) {
                     let attachment = ChatAttachment(type: .image, data: jpegData)
                     DispatchQueue.main.async {
                         viewModel.pendingAttachments.append(attachment)

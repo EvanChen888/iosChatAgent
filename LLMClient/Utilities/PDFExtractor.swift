@@ -19,14 +19,9 @@ public class PDFExtractor {
         for i in 0..<document.pageCount {
             guard let page = document.page(at: i) else { continue }
             
-            // First try standard text extraction
+            // Extract standard native text
             if let pageText = page.string, !pageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 extractedText += pageText + "\n"
-            } else {
-                // If standard text extraction yields nothing (likely a scanned image PDF), fallback to OCR
-                if let ocrText = performOCR(on: page) {
-                    extractedText += ocrText + "\n"
-                }
             }
         }
         
