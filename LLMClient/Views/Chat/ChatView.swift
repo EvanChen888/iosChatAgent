@@ -11,6 +11,7 @@ public struct ChatView: View {
     @State private var showingDeepSeekAlert = false
     @State private var showingCamera = false
     @State private var cachedSession: ChatSession? = nil
+    @State private var lastAutoScrollTime: Date = .distantPast
     @FocusState private var isInputFocused: Bool
     
     public init(viewModel: ChatViewModel) {
@@ -77,40 +78,47 @@ public struct ChatView: View {
                         ScrollView {
                             LazyVStack(spacing: 12) {
                                 ForEach(session.messages) { message in
-                                    MessageBubble(message: message, onImageTap: { img in
-                                        viewModel.previewImage = img
-                                    }, onAttachmentTap: { att in
-                                        viewModel.selectedAttachment = att
-                                    })
+                                    let isLastAssistant = message.role == .assistant && message.id == session.messages.last?.id
+                                    MessageBubble(
+                                        message: message,
+                                        isStreaming: viewModel.isGenerating && isLastAssistant,
+                                        onImageTap: { img in
+                                            viewModel.previewImage = img
+                                        }, onAttachmentTap: { att in
+                                            viewModel.selectedAttachment = att
+                                        }
+                                    )
                                         .equatable()
                                         .id(message.id)
                                         .transition(.asymmetric(insertion: .scale(scale: 0.95).combined(with: .opacity), removal: .opacity))
                                 }
+                                Color.clear.frame(height: 1).id("bottomAnchor")
                             }
                             .padding()
                             .animation(.spring(response: 0.3, dampingFraction: 0.8), value: session.messages.count)
+                            .animation(.none, value: session.messages.last?.content)
                         }
-                        .scrollDismissesKeyboard(.interactively)
+                        .scrollDismissesKeyboard(.immediately)
                         .onChange(of: session.messages.count) { _ in
-                            if let lastMessage = session.messages.last {
+                            if !session.messages.isEmpty {
                                 withAnimation(.easeOut(duration: 0.3)) {
-                                    proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                                    proxy.scrollTo("bottomAnchor", anchor: .bottom)
                                 }
                             }
                         }
                         .onChange(of: session.messages.last?.content) { _ in
-                            if let lastMessage = session.messages.last {
-                                proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                            if !session.messages.isEmpty {
+                                let now = Date()
+                                if now.timeIntervalSince(lastAutoScrollTime) > 0.1 {
+                                    proxy.scrollTo("bottomAnchor", anchor: .bottom)
+                                    lastAutoScrollTime = now
+                                }
                             }
                         }
                         .overlay(alignment: .bottomTrailing) {
                             if !session.messages.isEmpty {
                                 Button(action: {
-                                    if let lastMessage = session.messages.last {
-                                        withAnimation(.easeOut(duration: 0.3)) {
-                                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                                        }
-                                    }
+                                    proxy.scrollTo("bottomAnchor", anchor: .bottom)
                                 }) {
                                     Image(systemName: "arrow.down.circle.fill")
                                         .resizable()
@@ -261,6 +269,22 @@ public struct ChatView: View {
             }
         }
         .navigationTitle(displaySession?.title ?? "Chat")
+        .onAppear {
+            if let session = activeSession {
+                cachedSession = session
+            }
+        }
+        .onChange(of: viewModel.selectedSessionId) { _ in
+            // When navigating back (selectedSessionId becomes nil), keep the
+            // cached session so the view hierarchy stays stable while the
+            // keyboard dismisses and the navigation transition completes.
+            if let session = activeSession {
+                cachedSession = session
+            }
+        }
+        .onDisappear {
+            isInputFocused = false
+        }
         .toolbar {
             ToolbarItem(placement: .principal) {
                 ModelPicker(viewModel: viewModel)

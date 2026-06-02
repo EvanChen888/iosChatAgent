@@ -113,9 +113,7 @@ public class ChatViewModel: ObservableObject {
             let assistantMessage = ChatMessage(role: .assistant, content: "")
             self.sessions[currentIndex].messages.append(assistantMessage)
             let messageIndex = self.sessions[currentIndex].messages.count - 1
-            
-            self.saveSessions()
-            
+
             let apiKey = KeychainManager.shared.get(for: model.provider) ?? ""
             if apiKey.isEmpty {
                 if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
@@ -146,7 +144,7 @@ public class ChatViewModel: ObservableObject {
                         accumulatedReasoning += text
                     }
                     
-                    if Date().timeIntervalSince(lastUpdateTime) > 0.05 {
+                    if Date().timeIntervalSince(lastUpdateTime) > 0.03 {
                         if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                             if !accumulatedText.isEmpty {
                                 sessions[currentIndex].messages[messageIndex].content += accumulatedText

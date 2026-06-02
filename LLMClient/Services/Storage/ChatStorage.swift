@@ -12,10 +12,13 @@ public class ChatStorage {
     }
     
     public func saveSessions(_ sessions: [ChatSession]) {
-        DispatchQueue.global(qos: .background).async { [weak self] in
+        // Snapshots the value-type array on the calling thread, then
+        // encodes + writes entirely off the main actor to avoid UI stalls.
+        let sessionsCopy = sessions
+        Task.detached(priority: .utility) { [weak self] in
             guard let self = self else { return }
             do {
-                let data = try JSONEncoder().encode(sessions)
+                let data = try JSONEncoder().encode(sessionsCopy)
                 try data.write(to: self.fileURL, options: [.atomic, .completeFileProtection])
             } catch {
                 print("Failed to save chat sessions: \(error)")

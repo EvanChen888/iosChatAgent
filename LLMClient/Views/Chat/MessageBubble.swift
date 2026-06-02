@@ -2,11 +2,19 @@ import SwiftUI
 
 public struct MessageBubble: View, Equatable {
     public let message: ChatMessage
+    public let isStreaming: Bool
     public var onImageTap: ((UIImage) -> Void)?
     public var onAttachmentTap: ((ChatAttachment) -> Void)?
-    
+
+    public init(message: ChatMessage, isStreaming: Bool = false, onImageTap: ((UIImage) -> Void)? = nil, onAttachmentTap: ((ChatAttachment) -> Void)? = nil) {
+        self.message = message
+        self.isStreaming = isStreaming
+        self.onImageTap = onImageTap
+        self.onAttachmentTap = onAttachmentTap
+    }
+
     public static func == (lhs: MessageBubble, rhs: MessageBubble) -> Bool {
-        lhs.message == rhs.message
+        lhs.message == rhs.message && lhs.isStreaming == rhs.isStreaming
     }
     
     public var body: some View {
@@ -83,7 +91,14 @@ public struct MessageBubble: View, Equatable {
                     .padding(.bottom, 4)
                 }
                 
-                MarkdownText(message.content)
+                Group {
+                    if isStreaming {
+                        Text(message.content)
+                            .textSelection(.enabled)
+                    } else {
+                        MarkdownText(message.content)
+                    }
+                }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                     .background(
