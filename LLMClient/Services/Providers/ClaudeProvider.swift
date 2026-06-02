@@ -87,7 +87,7 @@ public class ClaudeProvider: LLMProvider {
     
     public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<StreamEvent, Error> {
         return AsyncThrowingStream { continuation in
-            Task {
+            let streamTask = Task {
                 do {
                     // Extract system messages
                     let systemMessages = messages.filter { $0.role == .system }.map { $0.content }.joined(separator: "\n")
@@ -174,6 +174,9 @@ public class ClaudeProvider: LLMProvider {
                 } catch {
                     continuation.finish(throwing: error)
                 }
+            }
+            continuation.onTermination = { @Sendable _ in
+                streamTask.cancel()
             }
         }
     }

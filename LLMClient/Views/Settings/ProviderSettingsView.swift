@@ -2,12 +2,12 @@ import SwiftUI
 
 public struct ProviderSettingsView: View {
     @StateObject private var settingsViewModel = SettingsViewModel()
-    @Environment(\.presentationMode) var presentationMode
-    
+    @Environment(\.dismiss) private var dismiss
+
     public init() {}
-    
+
     public var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 Section(header: Text("AI Providers")) {
                     ForEach(AIProvider.allCases) { provider in
@@ -15,7 +15,7 @@ public struct ProviderSettingsView: View {
                             HStack {
                                 Text(provider.rawValue)
                                 Spacer()
-                                
+
                                 if settingsViewModel.providerConfigured[provider] == true {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundColor(.green)
@@ -32,7 +32,7 @@ public struct ProviderSettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }
                 }
             }

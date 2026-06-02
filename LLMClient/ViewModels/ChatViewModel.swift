@@ -12,6 +12,8 @@ public class ChatViewModel: ObservableObject {
     @Published public var previewImage: UIImage? = nil
     @Published public var selectedAttachment: ChatAttachment? = nil
     @Published public var pdfVisionMode: Bool = false
+
+    private var currentStreamTask: Task<Void, Never>?
     
     public init() {
         let loadedSessions = ChatStorage.shared.loadSessions()
@@ -79,10 +81,13 @@ public class ChatViewModel: ObservableObject {
         inputText = ""
         pendingAttachments = []
         isGenerating = true
-        
+
+        // Cancel any previous streaming task to prevent overlapping streams
+        currentStreamTask?.cancel()
+
         guard let model = activeModel else { return }
-        
-        Task {
+
+        currentStreamTask = Task {
             // Process PDF attachments on a background thread to prevent UI freezing
             let processedAttachments = await Task.detached {
                 var processed: [ChatAttachment] = []
@@ -118,13 +123,18 @@ public class ChatViewModel: ObservableObject {
             if apiKey.isEmpty {
                 if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                     sessions[currentIndex].messages[messageIndex].content = "Error: Please configure the API key for \(model.provider.rawValue) in Settings."
-                    isGenerating = false
                 }
+                isGenerating = false
+                currentStreamTask = nil
                 return
             }
             
             do {
-                let stream = AIService.shared.streamMessage(sessions[index].messages, model: model, apiKey: apiKey) { tokenUsage in
+                // Exclude the empty assistant placeholder from the API request
+                let apiMessages = sessions[index].messages.filter {
+                    !($0.role == .assistant && $0.content.isEmpty)
+                }
+                let stream = AIService.shared.streamMessage(apiMessages, model: model, apiKey: apiKey) { tokenUsage in
                     Task { @MainActor in
                         if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                             self.sessions[currentIndex].messages[messageIndex].tokenUsage = tokenUsage
@@ -135,8 +145,12 @@ public class ChatViewModel: ObservableObject {
                 var accumulatedText = ""
                 var accumulatedReasoning = ""
                 var lastUpdateTime = Date()
-                
+
                 for try await event in stream {
+                    // Stop processing if task was cancelled or session no longer exists
+                    if Task.isCancelled || self.sessions.firstIndex(where: { $0.id == targetSessionId }) == nil {
+                        break
+                    }
                     switch event {
                     case .text(let text):
                         accumulatedText += text
@@ -162,8 +176,8 @@ public class ChatViewModel: ObservableObject {
                     }
                 }
                 
-                // Flush remaining text
-                if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
+                // Flush remaining text (skip if cancelled — new stream owns the message)
+                if !Task.isCancelled, let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                     if !accumulatedText.isEmpty {
                         sessions[currentIndex].messages[messageIndex].content += accumulatedText
                     }
@@ -175,18 +189,21 @@ public class ChatViewModel: ObservableObject {
                     }
                 }
             } catch {
-                if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
+                if !Task.isCancelled, let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }) {
                     sessions[currentIndex].messages[messageIndex].content = "Error: \(error.localizedDescription)"
                 }
             }
-            isGenerating = false
-            saveSessions()
-            
-            // Auto-generate title for new chats
-            if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }), sessions[currentIndex].title == "New Chat", let firstUserMsg = sessions[currentIndex].messages.first(where: { $0.role == .user }) {
-                let msgContent = firstUserMsg.content
-                generateSummaryTitle(for: targetSessionId, firstMessage: msgContent, model: model, apiKey: apiKey)
+            if !Task.isCancelled {
+                isGenerating = false
+                saveSessions()
+
+                // Auto-generate title for new chats
+                if let currentIndex = self.sessions.firstIndex(where: { $0.id == targetSessionId }), sessions[currentIndex].title == "New Chat", let firstUserMsg = sessions[currentIndex].messages.first(where: { $0.role == .user }) {
+                    let msgContent = firstUserMsg.content
+                    generateSummaryTitle(for: targetSessionId, firstMessage: msgContent, model: model, apiKey: apiKey)
+                }
             }
+            currentStreamTask = nil
         }
     }
     

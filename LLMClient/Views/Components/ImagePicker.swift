@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 public struct ImagePicker: UIViewControllerRepresentable {
-    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.dismiss) private var dismiss
     public var sourceType: UIImagePickerController.SourceType
     public var onImagePicked: (UIImage) -> Void
 
@@ -22,7 +22,7 @@ public struct ImagePicker: UIViewControllerRepresentable {
 
     public func makeCoordinator() -> Coordinator {
         Coordinator(
-            onDismiss: { presentationMode.wrappedValue.dismiss() },
+            onDismiss: { dismiss() },
             onImagePicked: onImagePicked
         )
     }

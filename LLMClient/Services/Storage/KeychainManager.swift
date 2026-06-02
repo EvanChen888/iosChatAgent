@@ -19,7 +19,9 @@ public class KeychainManager {
             kSecAttrAccount as String: account
         ]
         
-        let data = key.data(using: .utf8)!
+        guard let keyData = key.data(using: .utf8) else {
+            throw NSError(domain: "KeychainError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to encode API key as UTF-8"])
+        }
         
         // Check if item exists
         var status = SecItemCopyMatching(query as CFDictionary, nil)
@@ -27,13 +29,14 @@ public class KeychainManager {
         if status == errSecSuccess {
             // Update existing
             let attributesToUpdate: [String: Any] = [
-                kSecValueData as String: data
+                kSecValueData as String: keyData
             ]
             status = SecItemUpdate(query as CFDictionary, attributesToUpdate as CFDictionary)
         } else if status == errSecItemNotFound {
-            // Add new
+            // Add new (device-only, no iCloud sync for sensitive API keys)
             var newQuery = query
-            newQuery[kSecValueData as String] = data
+            newQuery[kSecValueData as String] = keyData
+            newQuery[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
             status = SecItemAdd(newQuery as CFDictionary, nil)
         }
         

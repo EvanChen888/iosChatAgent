@@ -246,6 +246,7 @@ public struct ChatView: View {
                             )
                             .disabled(viewModel.isGenerating)
                         
+                        let canSend = !viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !viewModel.pendingAttachments.isEmpty
                         Button(action: {
                             if viewModel.activeModel?.provider == .deepseek && viewModel.pendingAttachments.contains(where: { $0.type == .image || (viewModel.pdfVisionMode && $0.type == .pdf) }) {
                                 showingDeepSeekAlert = true
@@ -256,9 +257,9 @@ public struct ChatView: View {
                             Image(systemName: "arrow.up.circle.fill")
                                 .resizable()
                                 .frame(width: 32, height: 32)
-                                .foregroundColor(viewModel.isGenerating || (viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && viewModel.pendingAttachments.isEmpty) ? .gray : .blue)
+                                .foregroundColor(viewModel.isGenerating || !canSend ? .gray : .blue)
                         }
-                        .disabled(viewModel.isGenerating || (viewModel.inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && viewModel.pendingAttachments.isEmpty))
+                        .disabled(viewModel.isGenerating || !canSend)
                         .padding(.bottom, 4)
                         .padding(.leading, 4)
                     }

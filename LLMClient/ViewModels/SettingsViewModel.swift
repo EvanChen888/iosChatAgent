@@ -10,12 +10,16 @@ public class SettingsViewModel: ObservableObject {
     }
     
     public func refreshStatus() {
-        var status: [AIProvider: Bool] = [:]
-        for provider in AIProvider.allCases {
-            let key = KeychainManager.shared.get(for: provider)
-            status[provider] = (key != nil && !key!.isEmpty)
+        Task.detached {
+            var status: [AIProvider: Bool] = [:]
+            for provider in AIProvider.allCases {
+                let key = KeychainManager.shared.get(for: provider)
+                status[provider] = (key?.isEmpty == false)
+            }
+            await MainActor.run {
+                self.providerConfigured = status
+            }
         }
-        providerConfigured = status
     }
     
     public func saveKey(_ key: String, for provider: AIProvider) {

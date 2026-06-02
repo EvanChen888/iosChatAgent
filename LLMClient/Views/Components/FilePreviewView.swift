@@ -10,7 +10,7 @@ public struct FilePreviewView: View {
     }
     
     public var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 if attachment.type == .pdf {
                     if let data = attachment.data {

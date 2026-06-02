@@ -143,7 +143,7 @@ public class OpenAIProvider: LLMProvider {
     
     public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<StreamEvent, Error> {
         return AsyncThrowingStream { continuation in
-            Task {
+            let streamTask = Task {
                 do {
                     let request = try buildRequest(messages: messages, model: model, apiKey: apiKey, stream: true)
                     let (result, response) = try await URLSession.shared.bytes(for: request)
@@ -193,6 +193,9 @@ public class OpenAIProvider: LLMProvider {
                 } catch {
                     continuation.finish(throwing: error)
                 }
+            }
+            continuation.onTermination = { @Sendable _ in
+                streamTask.cancel()
             }
         }
     }

@@ -64,7 +64,7 @@ public class GeminiProvider: LLMProvider {
     
     public func streamMessage(_ messages: [ChatMessage], model: AIModel, apiKey: String, onUsageUpdate: @escaping (TokenUsage) -> Void) -> AsyncThrowingStream<StreamEvent, Error> {
         return AsyncThrowingStream { continuation in
-            Task {
+            let streamTask = Task {
                 do {
                     let systemMessages = messages.filter { $0.role == .system }.map { $0.content }.joined(separator: "\n")
                     let systemInstruction: GeminiSystemInstruction? = systemMessages.isEmpty ? nil : GeminiSystemInstruction(parts: [GeminiPart(text: systemMessages)])
@@ -96,13 +96,14 @@ public class GeminiProvider: LLMProvider {
                     
                     let requestBody = GeminiRequest(contents: contents, systemInstruction: systemInstruction)
                     
-                    let urlString = "https://generativelanguage.googleapis.com/v1beta/models/\(model.id):streamGenerateContent?alt=sse&key=\(apiKey)"
+                    let urlString = "https://generativelanguage.googleapis.com/v1beta/models/\(model.id):streamGenerateContent?alt=sse"
                     guard let url = URL(string: urlString) else {
                         throw URLError(.badURL)
                     }
-                    
+
                     var request = URLRequest(url: url)
                     request.httpMethod = "POST"
+                    request.addValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
                     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
                     request.httpBody = try JSONEncoder().encode(requestBody)
                     
@@ -138,14 +139,19 @@ public class GeminiProvider: LLMProvider {
                                 onUsageUpdate(tokenUsage)
                             }
                         } catch {
+                            // Log but tolerate individual chunk parse failures
+                            print("[Gemini] Failed to decode stream chunk: \(error.localizedDescription)")
                             continue
                         }
                     }
-                    
+
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
                 }
+            }
+            continuation.onTermination = { @Sendable _ in
+                streamTask.cancel()
             }
         }
     }
